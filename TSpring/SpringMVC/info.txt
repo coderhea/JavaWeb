@@ -1,0 +1,635 @@
+/*
+웹 프로그램이란, 인터넷 서비스를 이용해서 서로 다른 구성요소들(PC등)이 통신할 수 있는 프로그램
+웹 서버 + 사용자(브라우저, 클라이언트) : Request, Response
+프로토콜 : 통신 규약 , IP주소 : 서버에 요청 시 주소를 알아야 '숫자', 도메인 .com mapping DNS
+PORT : 여러 프로그램 접속방법 (port, route경로는 종종 생략)
+Container 동적 + HTML 정적
+*/
+
+/* 6
+DI : 각 클래스 간의 의존관계를 bean 설정 정보 바탕으로
+컨테이너 자동연결 : 객체 레퍼런스를 컨테이너로부터 주입받아 실행 동시에 동적 의존관계 생성 
+
+코드 단순, 컴포넌트간 결합도 제거 , new객체(); 더이상없음
+클래스 -> 구현클래스 x, 인터페이스를 사용하고
+조립기 beans.xml에 의존관계 설정해서 어떤 구현클래스 쓸 것인지 
+
+
+Spring DI 컨테이너 개념 :  관리 객체 bean, beanFactory
+객체의 생성과 런타임 관계 DI관점에서 해당 컨테이너 beanFactory여기에 다
+여기에 다른 컨테이너 기능 추가 : ApplicationContext 부름 
+둘다 interface, BeanFactory(getBean(), bean 등록 생성 조회 반환)
+
+
+설정 파일은 src > config 폴더 (프로젝트 ㄴㄴ) 생성후 그 안에
+spring bean configuration file : aop x here yet "Beans", 최신 소스만 선택 
+beans graph, namespace확인가능 : ref="printer"하자 beans GRaph에서 Hello클래스가 printer로 화살표 
+
+자 이제 test를 해보자 , xml 하위 xml.test 패키지 생성
+getBeans하는 방법은 getBeans(" ") 아이디만, 또는 getBeans(" " , XX.class) 아이디와 클래스 
+앞의 경우는 아이디만 객체이므로 (클래스명) 으로 형변환 typecast필요
+그런데 두 경우 생성된 것이 동일함 즉 Singleton, Not 또다른 생성 possible by Spring IOC
+
+/* 7 
+jUnit : 
+TDD Kent Beck + 디자인패턴 Erich Gamma
+
+pom.xml dependdency junit추가 
+Run as 도 as Junit Test
+assert메서드로 예상,실제값 
+@Test @Before @After 등 어노테이션 지원
+@Test 각@Test메서드 호출시 새 인스턴스 독립적 실행 
+@Before : @Test 실행전, 즉 공통사용 코드
+@After : @Test후 실행 릴리즈 
+@BeforeClass, @AfterClass 1회만 수행 
+
+Assert메서드
+assertEquals(a,b) 객체value, assertSame(a,b)객체ref
+assertTrue(a)  asssertNotNull
+
+Spring-test 
+각각 테스트 별 객체 생성되어도 싱글톤 ApplicationContext 보장
+
+@Autowired : DI Bean 'context' 자동매핑  - GenericXml 설정 불필요 @RunWith & @Autowired
+ @RunWith(SpringJUnit4ClassRunner.class) 
+ @ContextConfiguration(locations="classpath:config/beans.xml") //@before mapping here,
+ public class HelloBeanJunitSpringTest {
+
+*/
+
+/* 8강 
+setter injection <property> 태그 :
+setter 메서드 통해 의존관계 Bean 주입시 
+ref : Bean 이름 이용 (참조객체) 주입, value : 단순 값 또는 Bean 아닌 객체 
+
+constructor injection 
+<constructor-arg>태그 생성자 파라미터, 여러 개 객체 한 번에 주입 가능 
+index=" " or name="  " 둘다 가능 
+
+컬렉션타입 주입 : config> new File > value.properties
+
+1) List : <list> <value> , Set : <set> <value>
+List<String> names; 
+public void setNames(List<String> list) {this.name=list;}
+
+<property name="names"> 
+  <list> <value /> <value /> </list>
+</property> 
+
+2) Map : key, value
+Map<String, Integer> ages;
+public void setAges(Map<String, Integer> ages){this.ages = ages;}
+
+<property name="ages>
+    <map><entry key="Kim" value="30"/><entry key="Lee" value="26"/></map>
+</property>
+
+id값 getBeans( 여기 안 )
+xmlBean과 달리 property:DB연결정보 는 개발/테스트/운영 따라 바뀔 수 있으니 
+XML이 아닌 간단한 key=value 구성의 properties파일형식으로 저장
+
+<context:property-placeholder   //${} 치환 위해 필요한 tag, namespaces : context beans에 이어 추가 
+   location ="classpath:config/database.properties/> 여기선 value.properties
+database.properties 안에 driverClass, url, username, pw
+<bean id ="datasource" class="   jdbc" 
+ < property name="url" value=${db.url}/>
+ <property name="username" value=${db.username}/> 이렇게 프로퍼티 치환  
+
+ /*9강
+ XML 단독 : 운영 -모든 bean 명시적 등록, 충돌 위험, setter/constructor필요
+ XML, Bean scanning :개발 적합 - 특정 어노테이션 부여,당장은 xml 관리 수고덜어주나 의존관계 엉킬수 있음
+ @Component <bean>태그와 동일함 아래 세 개는 Compoennt의 특정 케이스 용
+ @Repository: persistence layer like 파일 데이터베이스
+ @Service : 서비스 비즈니스 로직
+ @Controller : presentation layer, webapp response, Request 
+
+ @Autowired : Type으로 주입, property, setter , 생성자, 일반메서드 적용 가능 
+ @Resource : Name으로 주입, (제한적) property, setter메서드에만 적용가능. 필요자원 자동연결 
+
+ @Value("hh") 는 <property .. value="hh"/>와 동일 단순 
+ @Qualifier : @Autowired와 함께 사용 (동일 타입의 Bean 객체 중 하나 ) 
+ setter메서드 불필요 by @Value() or @Qualifier()
+
+<context:component-scan base-package="myspring.di.annot"> 자동 bean 등록,
+ @Autowired 의존관계 주입받는 어노테이션 선언시 xml설정 필요 해당 클래스가 있는 package
+ <context:include-filter> <content:exclude-filter>
+
+ 원칙적인 POJO 에서 class인 /Hello/, /StringPrinter/, /ConsolePrinter/에 @Component("name")
+ 또한 StringPrinter에 의존하니 /Hello/에 @Autowired도 추가
+ (di.xml 패키지 -> di.annot패키지 통째로 복사)
+
+ Annot Test는 오류가 있네!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ Annot Test도 @RunWith, @ContextConfig( classpath:config/annot.xml)
+  public class HelloAnnotTest(
+      @Autowired
+      ApplicationContext context;
+      @Test 
+      public void test()
+  )
+
+*/
+/*10강 : 사용자관리 프로젝트
+presentation 계층 : @Controller 
+브라우저 상의 웹클라이언트 요청 응답 처리
+상위계층(서비스, 데이터액세스계층) 발생 Exception 처리
+최종UI에서 표현해야 할 도메인 모델 사용 
+최종 UI입력 데이터 대한 유효성검증 Validation 기능 제공
+비즈니스 로직, 최종 UI 분리위한 컨트롤러 기능 제공
+~~~~~UserController 클래스 (UI-서비스 계층 연결)
+JSP UserController통해 서비스계층 UserService사용, IoC-@Autowired
+
+service 계층 : 인터페이스 + @Service
+애플리케이션 비즈니스 로직 처리, 비즈니스 관련 도메인 모델 적합성 검증
+트랜잭션 처리 
+프레젠테이션 계층 - 데이터 액세스 계층 사이 연결, 두 계층이 직접 통신 않아
+애플리케이션 유연성 증가
+다른 계층들과 통신하기 위한 인터페이스를 제공 
+~~~~UserService 인터페이스
+~~~~UserServiceImpl 클래스 (업무로직)
+UserDAO 사용 IoC-@Autowired
+
+data access 계층  : DAO 인터페이스 + @Repository
+rdbms 데이터 조작 데이터 액세스 로직 구체화
+영구저장소 데이터 CRUD 조회 등록 수정 삭제 
+ORM 프레임워크(MyBatis, Hibernate) 주로사용 
+~~~~~UserDAO 인터페이스
+~~~~~UserDAOImplJDBC 클래스 
+(springJdBC-DataSource 주입)(MyBatis-SQlSession 주입)
+
+3개 계층 공통 : 도메인 모델 '클래스' 계층x
+RDBMS의 entity와 유사한 VO(Value Object) 또는 DTO(Data Transfer Object)
+private선언 멤버변수 : getter setter 메서드 클래스 지칭
+!!!!!!!!!!1
+항상  public, private변수, 생성자 2개, public gettersetter
+public class AAA {
+    private String id;
+    private String name;
+
+    public AAA(){}
+
+    public AAA(String id, String name){
+        this.id = id;
+        this.name = name;
+    }
+
+    public void setId(String id){
+        this.id = id;
+    }
+
+    public String getId(){
+        return id;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+    
+    public String getName(){
+        return name;
+    }
+}
+ * /
+
+ /* 11강
+ DAO (Data Access Object) 패턴 
+ 비즈니스 로직, 데이터 액세스 로직 분리 원칙 
+ Connection Pooling : 미리 정해진 개수만큼 DB 커넥션 Pool준비 
+   하나씩 할당 후 돌려받아 pool에 넣는 기법/ Spring Bean으로 지정가능 
+
+JDBC : 모든 자바 데이터액세스 기술 근간, 최신ORM보다 Low level, source바닥
+Spring JDBC : 기존 JDBC 단점 극복, 작업 대신 SQL param Object만 지정하면 됨
+(JSP강좌 참고) Connection 열고닫기, Statement(PreparedStatement) 열고닫기 해줌
+Statement실행 (다양한 형태호출 가능), ReS(result set) loop 처리, 
+RuntimeException이어서 try catch 안 써도 됨. / transaction 처리....
+테스트환경 : SimpleDriverDataSource 매번 커넥션 새로만듦, pool x 
+        : SingleConnectionDriverDataSource(쓰레드용은 x)
+
+오픈소스 : Apache Commons DBCP 제일 평범 , c3p0 JDBC/DataSource Resource Poool
+
+JdbcTemplate Class : insert,update,select,batch
+JdbcTemplate template = new JdbcTemplate(dataSource);
+DAO DI 의존관계 주입 멀티쓰레드에서도 가능 @Autowired void setDataSource(Datasource)
+
+queryForObject() : 여러 개 칼럼 인데 단일 Row로 반환 시 
+T : VO객체 타입에 해당 
+RowMapper<T> :  단일 Row 매핑 가능 
+
+pubilc User findUser(String id){
+    return this.JdbcTemplate.queryForObject("select * from users where 
+    id=?", new Object[] {id},
+    new RowMapper<User>(){
+        public User mapRow(ResultSet rs, int rowNum) throws 
+        SQLException{
+            User user = new User();
+            user.setId(rs.getString("id"));
+            user.setName(rs.getString("name"));
+            user.setPassword(rs.getString("password"));
+            return user;
+        }
+    })
+}
+
+query() List<T> return값 
+
+*/
+
+/* 13ㄱㅏㅇ
+OOP여도 해결 안되는 핵심/부가기능 분리 : AOP로 
+Asepct 부가기능 애스펙트 정의
+Advice 정의코드 + PointCut적용장소 = Asepct
+런타임 시 동적 위치 실행 가능 
+Target: 핵심기능 모듈, 부가기능 부여 대상
+Advice : 타겟제공할 부가기능 모듈 : Singleton
+JOin Point : 어드바이스 적용 위치,
+ 타겟객체가 구현한 인터페이스의 모든 메서드 
+Pointcut : 어드바이스 적용 타겟 메서드 선별 정규표현식 
+  (메서드 Signature 비교)
+Advisor = Advice + Pointcut
+Weaving : 포인트컷 의해 결정된 타겟의 조인포인트에 부가기능 삽입
+Cross-cutting concern(보안, 인증, 로그) -Advice->Point-cutting
+여기까지 Aspect 
+이것을 Core에 적용하는 과정이 Weaving 
+
+Spring은 Target 객체 프록시 만들어 제공, 어드바이스 타겟객체 적용 시 런타임
+Proxy가 호출 가로챔(전처리 어드바이스) 핵심 로직메서드 호출 후 (후처리 어드바이스)
+오직 런타임 시점에만 부가기능(어드바이스) 적용 //(vs AspectJ : 객체생성, 필드값 업뎅트 등 다양 시점)
+
+XML <aop:config>  또는 @Aspect, <aop:aspectj-autoproxy/> 
+
+around 어드바이스 : 전후, After Throwing 어드바이스 : 예외처리 후
+trace(ProceedingJoinPoint joinPoint) 파라미터 필수선언 
+
+/* 14강
+AspectJ 포인트컷 표현식 : execution() : 
+execution([접근제한자 패턴] 리턴값타입패턴 [타입패턴.] 
+메서드이름패턴(타입패턴|"..",...)[throws 예외패턴])
+
+예시 : execution(* aspects.trace.demo.*.*(..))"
+execution(*hello(..)) hello 이름 메서드 선정, 모든 파라미터exec
+execution(*myspring.user.srvice.UserServiceImpl.*(..)) 
+  -- UserServiceImpl 클래스 직접 지정, 모든 메서드 선택 
+execution(*myspring.user.service*.*(..)) service패키지 내 모든 클래스
+execution(*myspring.user.service..*.*(..)) service뒤에 .. 더 있어, 서브패키지 모든 클래스까지
+execution(* *..Target.*(..)) Target이름 모든 클래스(패키지 무관)
+
+*/
+/*14강
+XML POJO : AOP 구현 Advice 클래스 작성 <aop:config> 어드바이스,포인트컷
+@Aspect 어노테이션 <aop:aspectj-autoproxy/> 메서드,포인트컷 : 클래스 내부
+
+@Before("pointcut)(joinPoint 파라미터 참조가능), @After("pointcut) : 정상종료, 예외(리턴값 직접 전달x) 
+@Around("pointcut") 
+@AfterReturning(pointcut="", returning="") returning 리턴값 변수이름 
+@AfterThrowing(pointcut="", throwing="") throwing 예외 저장 변수이름
+
+UserService.getUser(..)시작
+@Before[getUser]전처리
+@Before[getUser]아규먼트
+@Before[read] 전처리
+@Before[read] 아규먼트
+LoadingXML bean def
+@After[getUser]메서드 실행완료
+@AfterThrowing[getUser]메서드 예외발생
+@AfterThrowing[getUser] PreparedStatement Callback
+UserService.getUser(..)종료
+ */
+ mybatis 건너뜀
+ /* 19강 
+MVC : Business, Presentation logic 분리 위해 : 영향없이 고침
+model - 데이터, 비즈니스 로직 view-프레젠테이션 로직, controller- m,v 사이 상호작용고나리
+client->C 요청
+C ->M 호출, 비즈니스 로직,데이터 처리 : 결과 받음
+C ->V 화면 생성 요청: 결과화면 
+C -> client 응답 
+
+Model 컴포넌트 : 데이터저장소와 연동, 입출력 데이터 다룸 : CRUD 트랜잭션 
+DAO, Service 클래스 해당 
+
+View 컴포넌트 : 모델 처리 데이터 또는 작업결과, 출력화면 만듦
+출력은 Browser, HTML, CSS, JS 사용 출력UI만듦 : HTML&JSP 가능
+
+Controller 컴포넌트 : 클라이언트 요청 업무수행 Model 컴포넌트 호출 
+적절히 데이터 가공, 또한 모델의 수행결과 화면생성 뷰 전달 
+Servlet, JSP로 가능 
+
+[모델 2 아키텍처 순서]
+MVC - Java (1. Controller by JSP, 2. Controller by Servlet)
+Spring :Servlet 활용(tomcat : url 확인) 
+1) Controller Servlet : Model 객체 호출 // 만약 데이터 저장 변경시 VO생성, 
+    EJB(Enterprise JavaBeans) 또는 일반 자바객체 POJO Service or DAO object
+2) Model 객체 SQL쿼리 to DBMS : 매개변수로 넘어온 VO객체를 DBMS 저장 또는 질의결과를 받아VO객체 생성 반환- JDBC사용 
+3) Controller Servlet 이 (VO값 참조된) Model 결과값을 JSP View파일에 넒김 
+4) JSP View역시 VO 참조해서 결과화면 만들어 Controller 서블릿 출력화면 제공
+5) 서버로부터 받은 응답내용 화면에 출력  
+
+[Front Controller 패턴 아키텍처] - Spring's DispatcherServlet
+클라이언트 보낸 요청 받아 공통작업 먼저 수행 : 세부 Controller 작업위임
+인증, 권한 체크 등 공통 로직 : 중앙집중적 관리 : front controller (Servlet)
+
+Spring MVC 특징 :
+DI, AOP 기능 외에도 서블릿 기반의 웹 개발 위한 MVC 프레임워크 제공 
+모델2아키텍처 + Front Controller 패턴 제공 : Spring의 트랜잭션,AOP 사용
+
+DispatcherServlet web.xml설정 (클라이언트의 모오오든 요청 전달받음)
+1) incoming request to FrontController
+2) Delegate request 위임 to Controller(개발자)
+3) handle Request, Model객체 create
+4) Controller to DispatcherServlet, Model (Delegate Rendering of Response 위임)
+5) Render Response ; View Template 
+6) Return from View Template to  FrontController 
+
+SpringMVC구성요소 
+1)DispatcherServlet : 클라이언트 요청 받아 Controller에 전달 , 
+ 리턴값 View에 전달해 알맞은 응답 생성 
+2) HandlerMapping : URL,요청정보 기준 핸들러객체 사용 결정, 
+   Dispatcher 하나 이상 사용가능, 이것 사용해 클라이언트 요청 처리할 Controller획득 
+3) DispatcherServlet, Controller 객체 이용 클라이언트 요청 처리
+   -- Controller : 클라이언트 요청 처리한 뒤, Model호출 결과 DispatcherServlet 알려줌
+4) Controller 클라이언트 요청처리결과 & View페이지 정보 담은 ModelAndView 객체 반환 
+    -- ModelAndView : Controller처리한 데이터 및 화면 정보 보유 객체 !!!
+5) DispatcherServlet ViewResolver로부터 응답결과 생성할 View 객체 구함
+    -- View : Controller 처리결과 화면 대한 정보보유 객체
+    -- ViewResolver: Controller가 리턴한 뷰 이름 기반 Controller처리결과 생성
+6) View는 클라이언트에게 전송할 응답 생성 
+
+
+[Spring MVC 기반 웹 어플리케이션 작성 절차]
+1) 클라이언트의 요청을 받는 DispatcherServlet을 web.xml설정 
+   -- <servlet> <servlet-name><param-value> / <servlet-mapping> 
+2) 클라이언트의 요청을 처리할 Controller를 작성  
+   -- @Controller public class UserController{ @Autowired, @RequestMapping("/getUser.do" url)}
+3) Spring Bean으로 Controller를 등록
+   --bean.xml <context:component-scan base-package= " "> (Component 왜냐면 @Controller)
+4) JSP를 이용한 View 영역의 코드를 작성
+   -- ${user.userId}, ${user.city} 등 EL문법 VO객체 
+5) Browser상에서 JSP를 실행
+   -- 해당 url에서 실행하면 화면 나옴 
+
+*/ 환경설정은 메모장에서
+/* 21강
+EL : <%= request.getParameter("name")%> -> ${param.name}
+    <% UserVO user=(UserVO)request.getAttribute("user");
+       out.println(user.getName()); %>
+    --> ${user.name} request는 생략 가능 , session은 명시 필요 
+    name만 EL로 하면, value는 자동 넘겨짐
+    <% UserVO user=(UserVO)session.getAttribute("user");
+       out.println(user.getName()); %>
+    --> ${sessionScope.user.name}
+
+전제조건 : @Controller 했을 그 package conmponent-scan base package로 
+
+JSTL : JSP Standard Tag Library 스크립팅 없이 루프,조건문,데이터관리포맷,XML조작 customizable
+request,response,pageContext, application 같은 JSP내장객체 쉽게 접근 가능 
+
+1)core 변수선언, 조건/제어/반복문 
+2)formatting 숫자 날짜 시간 국제화 
+3)function
+4)database 5)xml   
+
+DispatcherServlet *.do 로 설정해놓은 상태 
+HelloController 
+1 POJO형태 Controller클래스 작성
+2 @Controller어노테이션 선언 
+3 메서드 @RequestMapping(url)선언 
+4 JSP View코드 
+5 Browser JSP실행 
+---- ui.Model (+addAttribute(name:String, value:Object) Model 
+  Controller에서 Service호출한 결과 받아서 view에게 전달하기 위해 전달받은 결과 Model객체 저장
+  Model (addAttribute(string Name, Object value) value객체 name이름 저장, view코드 :name지정이름 value사용 
+
+[HelloController]
+HelloController.java는 user.controller package하단, 
+hello.jsp는 WebContent 아래
+beans.xml <component scan 이미 myspring.user.로 되어있으므로 안 건드려도됨)
+Browser상에 /hello.do 하면 
+
+[사용자 목록조회 Controller] -ModelAndView 로 바뀜!(스크린샷)
+1 POJO UserController클래스 작성
+2 @Controller 어노테이션 선언 
+3 사용자목록 조회 getUserList()메서드 선언 
+  이 메서드에 @RequestMapping 어노테이션 선언 
+4 userList.jsp JSP파일에 View코드 작성
+5 Browser JSP실행 
+ 
+1)/getUserList.do 포워딩
+<%response.sendRedirect("getUserList.do");%>
+|index.jsp| ->  @Controller myspring.user.UserController 
+               	+ @AutoWired
+		+ userService : UserService
+	        + @RequestMapping(name="getUserList.do")
+           	+ getUserList() :String 
+
+2)@Autowired에 따라 userService 컨트롤러가 서비스 찾으면, getUserList() 메서드 호출
+UserController.java : @Autowired UserService userService , 
+                      @RequestMapping("/getUserList.do") String getUserList(Model model)
+beans.xml       <context:component-scan base-package="myspring.user..../>
+
+UserController -> <<interface>> UserService
+                + insertUser(user:UserVO)
+		+ getUserList() : List<UserVO>
+		+ deleteUser(id:String)
+		+ getUser(id:String) :UserVO
+
+
+3)호출결과 데이터 UserController에 다시쏘면,Model 객체에 저장
+UserController -> org.springframework.ui.Model
+    		+ addAttribute(String, Object)
+
+
+4)JSP파일에 포워딩 
+userList.jsp   <c:forEach var="user" items="${userList}">
+                    <tr><td>${user.userId}</td></tr>
+UserController -> userList.jsp
+
+5)JSP파일은 Model에 저장된 객체, 즉 데이터 읽음
+userList.jsp -> org.springframework.ui.Model
+   ${userList} ${user.userid} ${user.username} loop
+
+
+/* 22강
+ViewResolver 설정 : internalResourceViewResolver
+  Controller 실행결과 어떤 view에서 보여줄 것인지 결정하는 기능 제공, prefix(/:라우팅처럼) suffix(확장자)
+웹 관련 설정이므로 beans-web.xml
+
+[특정 사용자 조회 Controller]
+1 getUser(String id)메서드 작성
+  @RequestMapping, @RequestParam:HTTP요청 파라미터 참조
+
+AAA.do?XXX=${} 와 (@RequestMapping("/AAA.do") @RequestParam <T> XXX)의 XXX 가 동일해야 함 
+
+userList.jsp :  <c:forEach var="user" items=${userList}>
+            	<tr><td><a href="getUser.do?id=${user.userId}>
+ 			${user.userId} </a>
+UserController.java @RequestMapping("/getUser.do")
+		    	public ModelAndView getUser(@RequestParam String id){
+				UserVO user = userService.getUser(id);
+				return new ModelAndView("userInfo", "user", user);
+
+2 userList.jsp 페이지 수정
+
+
+View에 데이터와 화면정보 전달하는 ModelAndView 클래스 : Service 호출결과 받아 View전달위해 이 객체저장
+
+org.springframework.web.servlet.ModelAndView
++ModelAndView(viewName:String, modelName:String, modelObject:Object)
++ModelAndView(viewName:String)
++addObject(attrName:String, attrValue:Object)//View전달할 데이터 저장하는곳 
+
++getModel() : Map<String,Object>
++getView() : View
++setView(view:View)
++setViewName(viewName:String)
+
+3 userInfo.jsp 페이지에 View 코드 작성
+4 Browser JSP실행 
+
+1)userList중 한 user클릭하면 getUser.do매핑
+userList.jsp -> @Controller myspring.user.UserController
+		+ @Autowired
+  		+ userService : UserService
+		+ @RequestMapping(name="getUserList.do")
+		+ getUserList():String
+		+ @RequestMapping(name="getUser.do")
+		+ getUser(@RequestParam String id): ModelAndView
+
+2)UserController, userService서비스의 getUser(id)메서드 호출
+UserController -> <<interface>> UserService
+		+ insertUser(user:UserVO)
+		+ getUserList(): List<UserVO>
+		+ deleteUser(id:String)
+		+ getUser(id:String):UserVO //요거 호출
+		+ updateUser(user:UserVO)
+
+3)UserVO 객체에 담아 결과값 반환 to UserController 그럼 이를 뿌려줄 viewName 화면과 객체Object 저장
+UserController 	@RequestMapping("/getUser.do")
+		public ModelAndView getUser(@RequestParam String id){
+			UserVO user = userService.getUser(id);
+			return new ModelAndView("userInfo", "user",user);
+
+UserController -> org.springframework.web.servlet.ModelAndView
+		+ ModelAndView(viewName, modelName, modelObject)
+
+4)JSP파일에 포워딩
+${user.userId}, ${user.city} 등 
+UserController -> userInfo.jsp
+
+5)JSP파일은 ModelAndView 정보 읽음
+userInfo.jsp -> org.springframework.web.servlet.ModelAndView
+
+
+
+[사용자 정보 등록 화면 Controller]
+1 insertUserForm() 메서드 작성, @RequestMapping 선언
+2 userList.jsp 페이지수정 - 등록Form 링크
+3 userInsert.jsp 페이지 View 코드 작성
+4 Browser상 JSP 실행 
+
+1)userList.jsp의 등록 링크 : UserController의 insertUserForm.do url의 메서드 호출
+userList.jsp -> @Controller myspring.user.UserController
+		+ @Autowired
+		+ userService : UserService
+		+ @RequestMapping(name="getUserList.do")
+		+ getUserList() : String
+		+ @RequestMapping(name="getUser.do")
+		+ getUser(@RequestParam String id): ModelAndView
+		+ @RequestMapping(name="insertUserForm.do") //여기로
+		+ insertUserForm():ModelAndView
+
+2) 등록화면과 Model정보 저장
+
+UserController  @RequestMapping("/insertUserForm.do")
+		public ModelAndView insertUserForm(){
+		List<String> genderList = new ArrayList<String>();
+		genderList.add("m");
+		genderList.add("f");
+		List<String> cityList = new ArrayList<String>();
+		cityList.add("seoul");
+		cityList.add("busan");
+		cityList.add("daegu");
+		Map<String, List<String>> map = new HashMap<>();
+		map.put("genderList", genderList);
+		map.put("cityList", cityList);
+		return new ModelAndView("userInsert", "map", map)
+		};
+//여기서 viewName: userInsert, modelName: map, with attribute "genderList", "cityList"
+
+
+UserController -> org.springframework.web.servlet.ModelAndView
+		+ ModelAndView(viewName, modelName, modelObject)
+
+3) JSP포워딩 //${model.attr}  !!!!!
+
+userInsert.jsp	<td><c:forEach var="genderName" items="${map.genderList}">
+			<input type="radio" name="gender" value=${genderName}">
+		</c:forEach></td>
+		<td><c:forEach var="cityName" items="${map.cityList}">...
+
+UserController -> userInsert.jsp
+
+4) Model정보 해당 JSP에서 읽음
+userInsert.jsp -> org.springframework.web.servlet.ModelAndView
+
+
+[사용자 정보 등록 Controller]
+1 사용자 정보 등록 insertUser(@ModelAttribute UserVO userVO)메서드 작성
+  @RequestMapping, @ModelAttribute 선언  
+
+---@ModelAttribute 는 HTTP요청 포함 파라미터, 모델 객체로 바인딩 저장하게 함
+   userInsert.jsp의 <input type="text" name="userId"/>,...
+              <select name="city"><c:forEach var="cityName option value=${cityName}>
+   UserVO.java 의 public class UserVO{ private String userId;(...) private String city;
+   매핑할 때 한 번에 UserVO모델 객체로 바인딩해주는 것 
+   
+   UserController의 @RequestMapping("/insertUser.do") 
+		  public String insertUser(@ModelAttribute UserVO user){
+  //단 전제 각각의 jsp input name값과 VO 객체의 변수가 동일해야함
+
+  redirect 목록조회페이지
+2 userInsert.jsp 페이지 View 코드작성
+3 Browser JSP 실행 
+
+1) userInsert.jsp의 등록버튼 클릭,UserController insertUser메서드 호출 
+
+userInsert.jsp form <form method="post" action="insertUser.do">
+ 			<input type="text" name="userId">...
+ 			<input type="submit" value="apply"/>
+			</form>
+
+userInsert.jsp -> @Controller myspring.user.UserController
+		+ @Autowired
+		+ userService:UserService
+		+ @RequestMapping(name="getUserList.do")
+		+ getUserList() : String
+		+ @RequestMapping(name="getUser.do")
+		+ getUser(@RequestParam String id): ModelAndView
+		+ @RequestMapping(name="insertUserForm.do")
+		+ insertUserForm(): ModelAndView
+		+ @RequestMapping(name="insertUser.do")
+		+ insertUser(@ModelAttribute UserVO userVO): String
+
+2) UserController에서 내부적 insertUser(user) 서비스내 메서드 호출
+
+
+UserController -> <<interface>> UserService
+		+ insertUser(user: UserVO)
+		+ getUserList(): List<UserVO>
+		+ deleteUser(id:String)
+		+ getUser(id:String) : UserVO
+		+ updateUser(user:UserVO)
+
+3)확인 위해 내부적으로 getUserList() 메서드 다시 호출
+
+UserController  @RequestMapping("/insertUser.do")
+		public String insertUser(@ModelAttribute UserVO user){
+			if(user!=null)
+				userService.insertUser(user);
+			return "redirect:/getUserList.do";} //getUserList 목록조회다시
+
+*****한글 입력값 request 데이터 인코딩 Filter클래스 설정
+web.xml  <filter-class>org.springframework.web.filter.CharacterEncodingFilter
+			<param-name>encoding <param-value>UTF-8  <filter-mapping> *do
+
+
+4)getUserList()메서드 호출되니 UserController에서 다시 userList.jsp 포워딩 
+
+UserController -> userList.jsp  
