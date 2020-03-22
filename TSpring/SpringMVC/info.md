@@ -1,12 +1,13 @@
-/*
+### Intro
 웹 프로그램이란, 인터넷 서비스를 이용해서 서로 다른 구성요소들(PC등)이 통신할 수 있는 프로그램
 웹 서버 + 사용자(브라우저, 클라이언트) : Request, Response
 프로토콜 : 통신 규약 , IP주소 : 서버에 요청 시 주소를 알아야 '숫자', 도메인 .com mapping DNS
 PORT : 여러 프로그램 접속방법 (port, route경로는 종종 생략)
 Container 동적 + HTML 정적
-*/
 
-###6
+***
+
+### 6
 DI : 각 클래스 간의 의존관계를 bean 설정 정보 바탕으로
 컨테이너 자동연결 : 객체 레퍼런스를 컨테이너로부터 주입받아 실행 동시에 동적 의존관계 생성 
 
@@ -14,12 +15,10 @@ DI : 각 클래스 간의 의존관계를 bean 설정 정보 바탕으로
 클래스 -> 구현클래스 x, 인터페이스를 사용하고
 조립기 beans.xml에 의존관계 설정해서 어떤 구현클래스 쓸 것인지 
 
-
 Spring DI 컨테이너 개념 :  관리 객체 bean, beanFactory
 객체의 생성과 런타임 관계 DI관점에서 해당 컨테이너 beanFactory여기에 다
 여기에 다른 컨테이너 기능 추가 : ApplicationContext 부름 
 둘다 interface, BeanFactory(getBean(), bean 등록 생성 조회 반환)
-
 
 설정 파일은 src > config 폴더 (프로젝트 ㄴㄴ) 생성후 그 안에
 spring bean configuration file : aop x here yet "Beans", 최신 소스만 선택 
@@ -31,7 +30,7 @@ getBeans하는 방법은 getBeans(" ") 아이디만, 또는 getBeans(" " , XX.cl
 그런데 두 경우 생성된 것이 동일함 즉 Singleton, Not 또다른 생성 possible by Spring IOC
 
 * * *
-###7
+### 7
 jUnit : 
 TDD Kent Beck + 디자인패턴 Erich Gamma
 
@@ -52,13 +51,12 @@ Spring-test
 각각 테스트 별 객체 생성되어도 싱글톤 ApplicationContext 보장
 
 @Autowired : DI Bean 'context' 자동매핑  - GenericXml 설정 불필요 @RunWith & @Autowired
- @RunWith(SpringJUnit4ClassRunner.class) 
- @ContextConfiguration(locations="classpath:config/beans.xml") //@before mapping here,
- public class HelloBeanJunitSpringTest {
 
+ 	@RunWith(SpringJUnit4ClassRunner.class) 
+ 	@ContextConfiguration(locations="classpath:config/beans.xml") //@before mapping here,
+ 		public class HelloBeanJunitSpringTest {}
 * * *
-
-###8
+### 8
 setter injection <property> 태그 :
 setter 메서드 통해 의존관계 Bean 주입시 
 ref : Bean 이름 이용 (참조객체) 주입, value : 단순 값 또는 Bean 아닌 객체 
@@ -70,34 +68,35 @@ index=" " or name="  " 둘다 가능
 컬렉션타입 주입 : config> new File > value.properties
 
 1) List : <list> <value> , Set : <set> <value>
-List<String> names; 
-public void setNames(List<String> list) {this.name=list;}
 
-<property name="names"> 
-  <list> <value /> <value /> </list>
-</property> 
+	List<String> names; 
+	public void setNames(List<String> list) {this.name=list;}
+
+	<property name="names"> 
+	  <list> <value /> <value /> </list>
+	</property> 
 
 2) Map : key, value
-Map<String, Integer> ages;
-public void setAges(Map<String, Integer> ages){this.ages = ages;}
 
-<property name="ages>
-    <map><entry key="Kim" value="30"/><entry key="Lee" value="26"/></map>
-</property>
+	Map<String, Integer> ages;
+	public void setAges(Map<String, Integer> ages){this.ages = ages;}
+
+	<property name="ages>
+	    <map><entry key="Kim" value="30"/><entry key="Lee" value="26"/></map>
+	</property>
 
 id값 getBeans( 여기 안 )
 xmlBean과 달리 property:DB연결정보 는 개발/테스트/운영 따라 바뀔 수 있으니 
 XML이 아닌 간단한 key=value 구성의 properties파일형식으로 저장
 
-<context:property-placeholder   //${} 치환 위해 필요한 tag, namespaces : context beans에 이어 추가 
-   location ="classpath:config/database.properties/> 여기선 value.properties
-database.properties 안에 driverClass, url, username, pw
-<bean id ="datasource" class="   jdbc" 
- < property name="url" value=${db.url}/>
- <property name="username" value=${db.username}/> 이렇게 프로퍼티 치환  
-
+	<context:property-placeholder   //${} 치환 위해 필요한 tag, namespaces : context beans에 이어 추가 
+	   location ="classpath:config/database.properties/> 여기선 value.properties
+	database.properties 안에 driverClass, url, username, pw
+		<bean id ="datasource" class="   jdbc" 
+		 <property name="url" value=${db.url}/>
+		 <property name="username" value=${db.username}/> 이렇게 프로퍼티 치환  
 * * *
-###9
+### 9
  XML 단독 : 운영 -모든 bean 명시적 등록, 충돌 위험, setter/constructor필요
  XML, Bean scanning :개발 적합 - 특정 어노테이션 부여,당장은 xml 관리 수고덜어주나 의존관계 엉킬수 있음
  @Component <bean>태그와 동일함 아래 세 개는 Compoennt의 특정 케이스 용
@@ -122,15 +121,16 @@ database.properties 안에 driverClass, url, username, pw
 
  Annot Test는 오류가 있네!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  Annot Test도 @RunWith, @ContextConfig( classpath:config/annot.xml)
-  public class HelloAnnotTest(
-      @Autowired
-      ApplicationContext context;
-      @Test 
-      public void test()
-  )
+
+	public class HelloAnnotTest(
+	      @Autowired
+	      ApplicationContext context;
+	      @Test 
+	      public void test()
+	  )
 
 * * *
-###10 
+### 10 
 : 사용자관리 프로젝트
 presentation 계층 : @Controller 
 브라우저 상의 웹클라이언트 요청 응답 처리
@@ -164,30 +164,30 @@ RDBMS의 entity와 유사한 VO(Value Object) 또는 DTO(Data Transfer Object)
 private선언 멤버변수 : getter setter 메서드 클래스 지칭
 
 항상  public, private변수, 생성자 2개, public gettersetter
-public class AAA {
-    private String id;
-    private String name;
-    public AAA(){}
-    public AAA(String id, String name){
-        this.id = id;
-        this.name = name;
-    }
-    public void setId(String id){
-        this.id = id;
-    }
-    public String getId(){
-        return id;
-    }
-    public void setName(String name){
-        this.name = name;
-    }
-    public String getName(){
-        return name;
-    }
-}
 
+	public class AAA {
+	    private String id;
+	    private String name;
+	    public AAA(){}
+	    public AAA(String id, String name){
+		this.id = id;
+		this.name = name;
+	    }
+	    public void setId(String id){
+		this.id = id;
+	    }
+	    public String getId(){
+		return id;
+	    }
+	    public void setName(String name){
+		this.name = name;
+	    }
+	    public String getName(){
+		return name;
+	    }
+	}
 ***
-###11
+### 11
  DAO (Data Access Object) 패턴 
  비즈니스 로직, 데이터 액세스 로직 분리 원칙 
  Connection Pooling : 미리 정해진 개수만큼 DB 커넥션 Pool준비 
@@ -211,25 +211,25 @@ queryForObject() : 여러 개 칼럼 인데 단일 Row로 반환 시
 T : VO객체 타입에 해당 
 RowMapper<T> :  단일 Row 매핑 가능 
 
-pubilc User findUser(String id){
-    return this.JdbcTemplate.queryForObject("select * from users where 
-    id=?", new Object[] {id},
-    new RowMapper<User>(){
-        public User mapRow(ResultSet rs, int rowNum) throws 
-        SQLException{
-            User user = new User();
-            user.setId(rs.getString("id"));
-            user.setName(rs.getString("name"));
-            user.setPassword(rs.getString("password"));
-            return user;
-        }
-    })
-}
+	pubilc User findUser(String id){
+	    return this.JdbcTemplate.queryForObject("select * from users where 
+	    id=?", new Object[] {id},
+	    new RowMapper<User>(){
+		public User mapRow(ResultSet rs, int rowNum) throws 
+		SQLException{
+		    User user = new User();
+		    user.setId(rs.getString("id"));
+		    user.setName(rs.getString("name"));
+		    user.setPassword(rs.getString("password"));
+		    return user;
+		}
+	    })
+	}
 
 query() List<T> return값 
 
 ***
-###13
+### 13
 OOP여도 해결 안되는 핵심/부가기능 분리 : AOP로 
 Asepct 부가기능 애스펙트 정의
 Advice 정의코드 + PointCut적용장소 = Asepct
@@ -256,7 +256,7 @@ around 어드바이스 : 전후, After Throwing 어드바이스 : 예외처리 �
 trace(ProceedingJoinPoint joinPoint) 파라미터 필수선언 
 
 ***
-###14
+### 14
 AspectJ 포인트컷 표현식 : execution() : 
 execution([접근제한자 패턴] 리턴값타입패턴 [타입패턴.] 
 메서드이름패턴(타입패턴|"..",...)[throws 예외패턴])
@@ -291,8 +291,7 @@ UserService.getUser(..)종료
 ***
  mybatis 건너뜀
 ***
-
-###19 
+### 19 
 MVC : Business, Presentation logic 분리 위해 : 영향없이 고침
 model - 데이터, 비즈니스 로직 view-프레젠테이션 로직, controller- m,v 사이 상호작용고나리
 client->C 요청
@@ -352,20 +351,20 @@ SpringMVC구성요소
 
 [Spring MVC 기반 웹 어플리케이션 작성 절차]
 1) 클라이언트의 요청을 받는 DispatcherServlet을 web.xml설정 
-   -- <servlet> <servlet-name><param-value> / <servlet-mapping> 
+   	<servlet> <servlet-name><param-value> / <servlet-mapping> 
 2) 클라이언트의 요청을 처리할 Controller를 작성  
-   -- @Controller public class UserController{ @Autowired, @RequestMapping("/getUser.do" url)}
+   	@Controller public class UserController{ @Autowired, @RequestMapping("/getUser.do" url)}
 3) Spring Bean으로 Controller를 등록
-   --bean.xml <context:component-scan base-package= " "> (Component 왜냐면 @Controller)
+   	bean.xml <context:component-scan base-package= " "> (Component 왜냐면 @Controller)
 4) JSP를 이용한 View 영역의 코드를 작성
-   -- ${user.userId}, ${user.city} 등 EL문법 VO객체 
+   	${user.userId}, ${user.city} 등 EL문법 VO객체 
 5) Browser상에서 JSP를 실행
-   -- 해당 url에서 실행하면 화면 나옴 
+   	해당 url에서 실행하면 화면 나옴 
 
 ***
 기타 환경설정 메모장
 ***
-###21
+### 21
 EL : <%= request.getParameter("name")%> -> ${param.name}
     <% UserVO user=(UserVO)request.getAttribute("user");
        out.println(user.getName()); %>
@@ -385,14 +384,14 @@ request,response,pageContext, application 같은 JSP내장객체 쉽게 접근 �
 3)function
 4)database 5)xml   
 
-DispatcherServlet *.do 로 설정해놓은 상태 
+DispatcherServlet '*.do￦' 로 설정해놓은 상태
 HelloController 
 1 POJO형태 Controller클래스 작성
 2 @Controller어노테이션 선언 
 3 메서드 @RequestMapping(url)선언 
 4 JSP View코드 
 5 Browser JSP실행 
----- ui.Model (+addAttribute(name:String, value:Object) Model 
+	ui.Model (+addAttribute(name:String, value:Object) Model 
   Controller에서 Service호출한 결과 받아서 view에게 전달하기 위해 전달받은 결과 Model객체 저장
   Model (addAttribute(string Name, Object value) value객체 name이름 저장, view코드 :name지정이름 value사용 
 
@@ -419,7 +418,8 @@ Browser상에 /hello.do 하면
            	+ getUserList() :String 
 
 2)@Autowired에 따라 userService 컨트롤러가 서비스 찾으면, getUserList() 메서드 호출
-UserController.java : @Autowired UserService userService , 
+UserController.java : 
+		      @Autowired UserService userService , 
                       @RequestMapping("/getUserList.do") String getUserList(Model model)
 beans.xml       <context:component-scan base-package="myspring.user..../>
 
@@ -445,7 +445,7 @@ userList.jsp -> org.springframework.ui.Model
    ${userList} ${user.userid} ${user.username} loop
 
 ***
-###22
+### 22
 ViewResolver 설정 : internalResourceViewResolver
   Controller 실행결과 어떤 view에서 보여줄 것인지 결정하는 기능 제공, prefix(/:라우팅처럼) suffix(확장자)
 웹 관련 설정이므로 beans-web.xml
@@ -455,14 +455,16 @@ ViewResolver 설정 : internalResourceViewResolver
   @RequestMapping, @RequestParam:HTTP요청 파라미터 참조
 
 AAA.do?XXX=${} 와 (@RequestMapping("/AAA.do") @RequestParam <T> XXX)의 XXX 가 동일해야 함 
-
-userList.jsp :  <c:forEach var="user" items=${userList}>
+userList.jsp   
+		<c:forEach var="user" items=${userList}>
             	<tr><td><a href="getUser.do?id=${user.userId}>
  			${user.userId} </a>
-UserController.java @RequestMapping("/getUser.do")
-		    	public ModelAndView getUser(@RequestParam String id){
-				UserVO user = userService.getUser(id);
-				return new ModelAndView("userInfo", "user", user);
+UserController.java
+			
+		@RequestMapping("/getUser.do")
+		  public ModelAndView getUser(@RequestParam String id){
+			UserVO user = userService.getUser(id);
+			return new ModelAndView("userInfo", "user", user);
 
 2 userList.jsp 페이지 수정
 
@@ -500,7 +502,9 @@ UserController -> <<interface>> UserService
 		+ updateUser(user:UserVO)
 
 3)UserVO 객체에 담아 결과값 반환 to UserController 그럼 이를 뿌려줄 viewName 화면과 객체Object 저장
-UserController 	@RequestMapping("/getUser.do")
+UserController.java
+	
+		@RequestMapping("/getUser.do")
 		public ModelAndView getUser(@RequestParam String id){
 			UserVO user = userService.getUser(id);
 			return new ModelAndView("userInfo", "user",user);
@@ -533,7 +537,6 @@ userList.jsp -> @Controller myspring.user.UserController
 		+ insertUserForm():ModelAndView
 
 2) 등록화면과 Model정보 저장
-
 UserController  @RequestMapping("/insertUserForm.do")
 		public ModelAndView insertUserForm(){
 		List<String> genderList = new ArrayList<String>();
@@ -548,15 +551,16 @@ UserController  @RequestMapping("/insertUserForm.do")
 		map.put("cityList", cityList);
 		return new ModelAndView("userInsert", "map", map)
 		};
-//여기서 viewName: userInsert, modelName: map, with attribute "genderList", "cityList"
+여기서 viewName: userInsert, modelName: map, with attribute "genderList", "cityList"
 
 
 UserController -> org.springframework.web.servlet.ModelAndView
 		+ ModelAndView(viewName, modelName, modelObject)
 
 3) JSP포워딩 //${model.attr}  !!!!!
+userInsert.jsp	
 
-userInsert.jsp	<td><c:forEach var="genderName" items="${map.genderList}">
+		<td><c:forEach var="genderName" items="${map.genderList}">
 			<input type="radio" name="gender" value=${genderName}">
 		</c:forEach></td>
 		<td><c:forEach var="cityName" items="${map.cityList}">...
@@ -586,8 +590,9 @@ userInsert.jsp -> org.springframework.web.servlet.ModelAndView
 3 Browser JSP 실행 
 
 1) userInsert.jsp의 등록버튼 클릭,UserController insertUser메서드 호출 
+userInsert.jsp
 
-userInsert.jsp form <form method="post" action="insertUser.do">
+		<form method="post" action="insertUser.do">
  			<input type="text" name="userId">...
  			<input type="submit" value="apply"/>
 			</form>
@@ -615,15 +620,18 @@ UserController -> <<interface>> UserService
 		+ updateUser(user:UserVO)
 
 3)확인 위해 내부적으로 getUserList() 메서드 다시 호출
+UserController.java  
 
-UserController  @RequestMapping("/insertUser.do")
+		@RequestMapping("/insertUser.do")
 		public String insertUser(@ModelAttribute UserVO user){
 			if(user!=null)
 				userService.insertUser(user);
 			return "redirect:/getUserList.do";} //getUserList 목록조회다시
 
-*****한글 입력값 request 데이터 인코딩 Filter클래스 설정
-web.xml  <filter-class>org.springframework.web.filter.CharacterEncodingFilter
+!!!한글 입력값 request 데이터 인코딩 Filter클래스 설정
+web.xml  
+	
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter
 			<param-name>encoding <param-value>UTF-8  <filter-mapping> *do
 
 
@@ -632,7 +640,7 @@ web.xml  <filter-class>org.springframework.web.filter.CharacterEncodingFilter
 UserController -> userList.jsp  
 
 ***
-###23 
+### 23 
 [사용자 정보 수정 Controller]
 1 사용자 정보 수정 화면 포워딩 updateUserForm
   (@RequestParam String id)메서드 작성 
@@ -667,14 +675,15 @@ userList.jsp -> @Controller myspring.user.UserController
 2) 데이터베이스에서 요청(param) id로 service에서 getUser(id)호출 
 
 UserController.java 
-@RequestMapping("/updateUserForm.do")
-public ModelAndView updateUserForm(@RequestParam String id){
-	UserVO user userService.getUser(id);
-	List<String> genderList = new ArrayList<String>();
-	genderList.add("남");..
-	Map<String, Object> map = new HashMap<String, OBject>();
-	map.put("genderList", genderList);...
-	return new ModelAndView("userUpdate", "map", map);
+
+	@RequestMapping("/updateUserForm.do")
+	public ModelAndView updateUserForm(@RequestParam String id){
+		UserVO user userService.getUser(id);
+		List<String> genderList = new ArrayList<String>();
+		genderList.add("남");..
+		Map<String, Object> map = new HashMap<String, OBject>();
+		map.put("genderList", genderList);...
+		return new ModelAndView("userUpdate", "map", map);
 
 @Controller -> <<interface>> UserService
 		+ insertUser(user:UserVO)
@@ -686,14 +695,15 @@ public ModelAndView updateUserForm(@RequestParam String id){
 3)Controller,그 UserVO return해서 userUpdate.jsp 포워딩
 
 userUpdate.jsp
-<td> <select name="city">
-	<c:forEach items=${map.cityList} var='cityName'> 
-		<select name="city> <c:choose>
-		<c:when test='${cityName eq map.user.city}'>
-			<option value=${cityName} selected>${cityName}</option>
-		</c:when> <c:otherwise>
-			<option value=${cityNam}>${cityName}</option>
-		</c:otherwise></c:choose></c:ForEach></select>
+
+	<td> <select name="city">
+		<c:forEach items=${map.cityList} var='cityName'> 
+			<select name="city> <c:choose>
+			<c:when test='${cityName eq map.user.city}'>
+				<option value=${cityName} selected>${cityName}</option>
+			</c:when> <c:otherwise>
+				<option value=${cityNam}>${cityName}</option>
+			</c:otherwise></c:choose></c:ForEach></select>
 
 @Controller -> userUpdate.jsp
 
@@ -729,11 +739,11 @@ userUpdate.jsp -> @Controller myspring.user.UserController
 		+ getUser(id:String) : UserVO
 		+ updateUser(user: UserVO)
 
-3) *업데이트 처리 후 목록 조회 다시, getUserList 메서드 Redirect
-
+3)!업데이트 처리 후 목록 조회 다시, getUserList 메서드 Redirect
 UserController.java
-@RequestMapping("/updateUser.do")
-public String updateUser(@ModelAttribute UserVO user){
+
+	@RequestMapping("/updateUser.do")
+	public String updateUser(@ModelAttribute UserVO user){
 		userService.updateUser(user);
 		return "redirect:/getUserList.do";
 
@@ -750,11 +760,11 @@ public String updateUser(@ModelAttribute UserVO user){
 
 @PathVariable 어노테이션 : 파라미터URL 형식으로 받을 수 있게 해줌
 
-<a href="deleteUser.do?id=${user.userId}"> & 
-	@RequestMapping(value="/deleteUser.do")
-<a href="deleteUser.do/${user.userId}"> & 
-	@RequestMapping(value="/deleteUser.do/{id}")
-	public String deleteUser(@PathVariable String id){  
+	<a href="deleteUser.do?id=${user.userId}"> & 
+		@RequestMapping(value="/deleteUser.do")
+	<a href="deleteUser.do/${user.userId}"> & 
+		@RequestMapping(value="/deleteUser.do/{id}")
+		public String deleteUser(@PathVariable String id){  
 RESTful API에서 활용함 
 
 이걸 이해서 DispatcherServlet url-pattern바뀌어야 
@@ -765,7 +775,6 @@ RESTful API에서 활용함
 3) 삭제후 Controller getUserList() 목록조회 redirect
 4) userList.jsp 포워딩
 
-
 [Exception MVC 예외처리]
 @ExceptionHandler : 예외Type,Message보여줄 JSP페이지
 
@@ -773,13 +782,9 @@ RESTful API에서 활용함
 
 ***
 config/ User.xml 확인!!! 18강
-
-
-
 * * * 
-###24
-
-REST(Representational State Transfer)
+### 24
+[REST(Representational State Transfer)]
 HTTP URI + HTTP Method 
 HTTP URI 제어 자원 resource 명시, Get,Post,Put,Delete HTTP Method통해 
 해당자원 resource 제어 명령 내리는 방식 아키텍처 
@@ -792,7 +797,7 @@ DELETE : Delete 	/users/{id}
 QueryString형식 GET/list.do?no=510&name=java 아닌 /java/510
 Get,Post만이 아닌 GET/POST/DELETE/PUT CRUD처리
 
-json : 경량의 data-교환 형식
+[json : 경량의 data-교환 형식]
 JavaScriptObject Notation : { " " : " ",
                               " " : [" ", " "] } //array,list
 JSON library : Jackson 
@@ -844,12 +849,14 @@ with @ResponseBody
 4 Ajax 통신으로 RESTful 웹서비스 호출 HTML페이지 작성
 
 insert는 select와 달리 json값이 들어옴 : Headers, insertUser 파라미터 @Body
+
 	@RequestMapping(value="/users", 
 			method=RequestMethod.POST (GET아님), 
                 	headers={"Content-type=application/json"})
 	@ResponseBody 
 	public Map insertUser(@RequestBody UserVO user){
 		그리고 if(user!= null) 해줘야 함
+
 이것은 Postman에서도 Headers(Content-Type, application/json;charset=UTF-8)입력!! 
      Post// Body/raw JSON(application/json)  
 
@@ -862,8 +869,8 @@ PUT,POST 둘다 result:TRUE만 나오고, 다시 userList GET할 때 업데이�
 DELETE, users/{id} Postman
 
 * * * 
-###26
-Ajax (Asynchronous Javascript and XML)
+### 26
+[Ajax (Asynchronous Javascript and XML)]
 웹 2.0 실현 핵심기능 (HTML, CSS, JS, XML, XMLHttpRequest객체)
 비동기적 : 서버 데이터가 로드되는 동안 계속 사용 가능 Ajax 이벤트 일부만 수정
 - 예 1 : 라이브 검색(자동완성, 검색어 입력동시에 검색결과 호출)
@@ -872,16 +879,16 @@ Ajax (Asynchronous Javascript and XML)
 XMLHttpRequest객체 : XHR 
 
 1) XMLHttpRequest객체 생성: Request 보낼 준비
-chrome,firefox,ie10 
-var xhr = new XMLHttpRequest();
+	var xhr = new XMLHttpRequest();
 
 2) Callback함수 생성: 서버 Response 오면 실행
-xhr.onreadystatechange = function(){
-	if(xhr.readyState==4){
-		var myDiv= document.getElementById('myDiv');
-		myDiv.innerHTML=xhr.responseText;
+
+		xhr.onreadystatechange = function(){
+		if(xhr.readyState==4){
+			var myDiv= document.getElementById('myDiv');
+			myDiv.innerHTML=xhr.responseText;
+			}
 		}
-}
 
 3) Request Open : HTTP method, 호출 Server url 정보 전달
 xhr.open("GET", "user.do");
@@ -894,33 +901,31 @@ HTML element동적 manipulation, attribute 읽고쓰기, 선택(Selector)
 (CDN : content delivery network host or 로컬 저장)
  jQuery 꼭 document ready해야 사용 가능
 <script> $(document).ready(function(){});</script>
-**********
+* * *
 26강 jQuery 예시 다시 
 https://offbyone.tistory.com/368
-*********
-
-###27
-
+* * *
+### 27
 [클라이언트 프로그램]
 1)RESTful 웹서비스 호출 : Ajax 통신
 2)Ajax 복잡코드 간결 작성 위해 jQuery의 $.ajax()함수 사용
 3)서버로부터 받은 데이터 이용, 동적 테이블 Row 증가 
 4)사용자 등록, 수정시 입력한 데이터 JSON포맷 변경, 서버 전송
-5)화면 스타일 코드 Bootstrap 
-
-//url:" ", type:' '
+5)화면 스타일 코드 Bootstrap    url:" ", type:' '
 
 userList_json.html
-<script type="text/javascript">
-	$(function(){
-		userList();
-		userSelect();
-		userDelete();
-		userInsert();
-		userUpdate();
-		init();
-  	}); jQuery document ready해야 사용 가능!
+
+	<script type="text/javascript">
+		$(function(){
+			userList();
+			userSelect();
+			userDelete();
+			userInsert();
+			userUpdate();
+			init();
+		}); jQuery document ready해야 사용 가능!
 //초기화
+
 	function init(){	
 		$('#btnInit').on('click',function(){
 			$('#form1').each(function(){
@@ -930,6 +935,7 @@ userList_json.html
 	} // init함수
 
 //목록조회	
+
 	function userList(){
 		$.ajax({
 			url:'users',type:'GET',
@@ -941,6 +947,7 @@ userList_json.html
 	}//server단의 RFUController에서 url:value, type:method:GET, error/success표현 확인
 
 //목록조회응답(위에서 success일 떄)
+
 	function userListResult(xhr){
 		console.log(xhr.data);
 		$("body").empty();
@@ -956,6 +963,7 @@ userList_json.html
 	//server단 result.put("data",userList);라서 xhr.data 로, 그리고 비동기적 html <tr><td></td></tr> : html <tbody></tbody>에 넣음
 
 //사용자(특정)조회 요청: 그 전에 우선 불러와야 함
+
 	function userSelect(){
 		$('body').on('click', '#btnSelect', function(){
 			var userId= $(this).closest('tr').find('#hidden_userId').val(); //위에 id hidden_userId, val(item.userId)
@@ -970,6 +978,7 @@ userList_json.html
 	}//server단의 RFUController에서 url:value, type:method:GET, error/success 
 
 //사용자 조회 응답(위에서 success일 때)
+
 	function userSelectResult(xhr){
 		var user= xhr.data;
 		$('input:text[name="userId"]').val(user.userId);
@@ -979,6 +988,7 @@ userList_json.html
 		$('select[name="city"]').val(user.city).attr("selected", "selected");
 
 //사용자 등록 요청
+
 	function userInsert(){
 		$('#btnInsert').on('click', function(){
 		var userId = $('input:text[name="userId"]).val();
@@ -997,8 +1007,8 @@ userList_json.html
 			});
 		}); //html form btnInsert id인 버튼 클릭
 	}
-
 //사용자 수정 요청
+
 	function userUpdate(){
 		$('#btnUpdate').on('click', function(){
 		var userId = $('input:text[name="userId"]').val();
@@ -1016,8 +1026,8 @@ userList_json.html
 		}); //ajax
 	}); //html form btnUpdate id인 버튼 클릭 
 }
+//사용자 삭제 요청 !!!조심 form이 아닌 List상에서 삭제
 
-//사용자 삭제 요청 **조심 form이 아닌 List상에서 삭제
 	function userDelete(){
 		$('body').on('click','#btnDelete',function(){ 
 		var userId = $(this).closest('tr').find('#hidden_userId').val(); //마지막 리턴값 id <tr>의 <btnDelete> 
@@ -1037,9 +1047,8 @@ userList_json.html
 }
 
 * * * 
-###28
-
-JAXB(Java Architecture for XML Binding) 
+### 28
+[JAXB(Java Architecture for XML Binding)] 
 jackson과 달리 Java SE에 포함된, Java Object->XML(직렬화, Marshalling) 및 
 XML-> Java OBject(역직렬화, Unmarsalling)해주는 API
 @XmlRootElement : 클래스 XML Root, @XmlElement : 변수 :XML element
@@ -1063,19 +1072,21 @@ XML-> Java OBject(역직렬화, Unmarsalling)해주는 API
 	public void setUserList(List<UserVO> userList) {this.userList= userList;} 
 
 이것이 만드는 것은 
-<users>
-	<status>success</status>
-	<user>
-		<city>jeju</city>
-		<gender>m</gender>
-		<name>dooly</name>
-		<userId>dolly</userId>
-	</user>
-	<user>...</user>
-</users>
+
+	<users>
+		<status>success</status>
+		<user>
+			<city>jeju</city>
+			<gender>m</gender>
+			<name>dooly</name>
+			<userId>dolly</userId>
+		</user>
+		<user>...</user>
+	</users>
 
 그럼 RestfulUserController도
-		@RequestMapping(value="/usersXml", method=RequestMethod.GET)
+
+	@RequestMapping(value="/usersXml", method=RequestMethod.GET)
 		@ResponseBody
 		public UserVOXML getUserListXml(){
 			List<UserVO> list = userService.getUserList();
@@ -1086,16 +1097,18 @@ Postman : GET : /usersXml
 userList_Xml.html 도 Xml반영 url, contentType,dataType 
 
 //Ajax요청
-$(function(){
-	$.ajax({
-		type:'get', url:'usersXml',
-		contentType:'application/xml;charset=utf-8', dataType:'xml',
-		error:function(xhr,status,msg){alert(status+msg);},
-		success:showResult
+
+	$(function(){
+		$.ajax({
+			type:'get', url:'usersXml',
+			contentType:'application/xml;charset=utf-8', dataType:'xml',
+			error:function(xhr,status,msg){alert(status+msg);},
+			success:showResult
+		});
 	});
-});
 
 //Ajax응답
+
 	function showResult(xhr){
 		console.log(xhr);
 		if($(xhr).find("status").text()=='success'){ //status 태그먼저나옴
