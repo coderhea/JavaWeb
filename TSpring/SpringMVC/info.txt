@@ -633,3 +633,144 @@ web.xml  <filter-class>org.springframework.web.filter.CharacterEncodingFilter
 4)getUserList()메서드 호출되니 UserController에서 다시 userList.jsp 포워딩 
 
 UserController -> userList.jsp  
+
+/*  23강 
+[사용자 정보 수정 Controller]
+1 사용자 정보 수정 화면 포워딩 updateUserForm
+  (@RequestParam String id)메서드 작성 
+  @RequestMapping, @RequestParam 어노테이션 선언 
+2 userList.jsp 페이지 수정
+3 userUpdate.jsp 페이지 View 코드 작성
+4 Browser JSP 실행
+
+1) userList.jsp '수정' 버튼, updateUserForm 메서드 호출
+
+userList.jsp 
+<td><a href="updateUserForm.do?id=${user.userId}">수정</a></td>
+
+
+userList.jsp -> @Controller myspring.user.UserController
+		+ @Autowired
+		+ userService : UserService
+		+ @RequestMapping(name="getUserList.do")
+		+ getUserList() : String
+		+ @RequestMapping(name="getUser.do")
+		+ getUser(@RequestParam String id): ModelAndView
+	  	+ @RequestMapping(name="insertUserForm.do")
+		+ insertUserForm(): ModelAndView
+		+ @RequestMapping(name="insertUser.do")
+		+ insertUser(@ModelAttribute UserVO userVO) : String 
+		+ @RequestMapping(name="deleteUser.do")
+		+ deleteUser(@RequestParam String id): String
+		+ @RequestMapping(name="updateUserForm.do")
+		+ updateUserForm(@RequestParam String id);
+		
+
+2) 데이터베이스에서 요청(param) id로 service에서 getUser(id)호출 
+
+UserController.java 
+@RequestMapping("/updateUserForm.do")
+public ModelAndView updateUserForm(@RequestParam String id){
+	UserVO user userService.getUser(id);
+	List<String> genderList = new ArrayList<String>();
+	genderList.add("남");..
+	Map<String, Object> map = new HashMap<String, OBject>();
+	map.put("genderList", genderList);...
+	return new ModelAndView("userUpdate", "map", map);
+
+@Controller -> <<interface>> UserService
+		+ insertUser(user:UserVO)
+		+ getUserList(): List<UserVO>
+		+ deleteUser(id:String)
+		+ getUser(id:String) : UserVO //요거 
+		+ updateUser(user:UserVO)
+
+3)Controller,그 UserVO return해서 userUpdate.jsp 포워딩
+
+userUpdate.jsp
+<td> <select name="city">
+	<c:forEach items=${map.cityList} var='cityName'> 
+		<select name="city> <c:choose>
+		<c:when test='${cityName eq map.user.city}'>
+			<option value=${cityName} selected>${cityName}</option>
+		</c:when> <c:otherwise>
+			<option value=${cityNam}>${cityName}</option>
+		</c:otherwise></c:choose></c:ForEach></select>
+
+@Controller -> userUpdate.jsp
+
+[사용자 정보 수정 Controller]
+1) userUpdate.jsp 수정정보 입력시 updateUser메서드 호출
+<input type="hidden"name="userId" value='${map.user.userId}'/> 
+<td>${map.user.userId}</td> 수정되면 안됨 but 활용해야
+
+userUpdate.jsp -> @Controller myspring.user.UserController
+		+ @Autowired
+		+ userService:UserService
+		+ @RequestMapping(name="getUserList.do")
+		+ getUserList() : String
+		+ @RequestMapping(name="getUser.do")
+		+ getUser(@RequestParam String id) : ModelAndView
+		+ @RequestMapping(name="insertUserForm.do")
+		+ insertUserForm() : ModelAndView
+		+ @RequestMapping(name="insertUser.do")
+		+ insertUser(@ModelAttribute UserVO userVO) : String
+		+ @RequestMapping(name="deleteUser.do")
+		+ deleteUser(@RequestParam String id) : String
+		+ @RequestMapping(name="updateUserForm.do")
+		+ updateUserForm(@RequestParam String id)
+		+ @RequestMapping(name="updateUser.do")
+		+ updateUser(@ModleAttribute UserVO user)
+
+2) Service 상의 updateUser(user)호출, DB 업데이트
+
+@Controller -> <<interface>> UserService
+		+ insertUser(user:UserVO)
+		+ getUserList(): List<UserVO>
+		+ deleteUser(id:String)
+		+ getUser(id:String) : UserVO
+		+ updateUser(user: UserVO)
+
+3) *업데이트 처리 후 목록 조회 다시, getUserList 메서드 Redirect
+
+UserController.java
+@RequestMapping("/updateUser.do")
+public String updateUser(@ModelAttribute UserVO user){
+		userService.updateUser(user);
+		return "redirect:/getUserList.do";
+
+4) userList.jsp 포워딩
+@Controller -> userList.jsp
+
+[사용자 정보 삭제 Controller 구현]
+
+1 사용자 정보 삭제 deleteUser(@PathVariable String id)메서드 작성, 
+  @RequestMapping, @PathVariable 어노테이션 선언,
+  삭제 후 목록조회 redirect
+2 userList.jsp 페이지 수정
+3 Browser JSP 실행
+
+@PathVariable 어노테이션 : 파라미터URL 형식으로 받을 수 있게 해줌
+
+<a href="deleteUser.do?id=${user.userId}"> & 
+	@RequestMapping(value="/deleteUser.do")
+<a href="deleteUser.do/${user.userId}"> & 
+	@RequestMapping(value="/deleteUser.do/{id}")
+	public String deleteUser(@PathVariable String id){  
+RESTful API에서 활용함 
+
+이걸 이해서 DispatcherServlet url-pattern바뀌어야 
+<servlet-mapping> <url-pattern>  *do -> / 
+
+1) userList.jsp '삭제'버튼 : Controller의 deleteUser메서드 호출 
+2) deleteUser메서드 Service의 deleteUser호출
+3) 삭제후 Controller getUserList() 목록조회 redirect
+4) userList.jsp 포워딩
+
+
+[Exception MVC 예외처리]
+@ExceptionHandler : 예외Type,Message보여줄 JSP페이지
+
+<%@ page isErrorPage = "true" %> 선언해야 함
+
+**config/ User.xml 확인!!! //18강
