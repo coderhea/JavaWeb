@@ -580,25 +580,30 @@ userInsert.jsp -> org.springframework.web.servlet.ModelAndView
 
 
 [사용자 정보 등록 Controller]
+
 1 사용자 정보 등록 insertUser(@ModelAttribute UserVO userVO)메서드 작성
-  @RequestMapping, @ModelAttribute 선언  
+  
+  	@RequestMapping, @ModelAttribute  
   @ModelAttribute 는 HTTP요청 포함 파라미터, 모델 객체로 바인딩 저장하게 함
-   userInsert.jsp의 <input type="text" name="userId"/>,...
-              <select name="city"><c:forEach var="cityName option value=${cityName}>
+  
+   userInsert.jsp
+   
+   		<input type="text" name="userId"/>,...
+              	<select name="city"><c:forEach var="cityName option value=${cityName}>
+		
    UserVO.java 의 public class UserVO{ private String userId;(...) private String city;
    매핑할 때 한 번에 UserVO모델 객체로 바인딩해주는 것 
    
    UserController의 @RequestMapping("/insertUser.do") 
 		  public String insertUser(@ModelAttribute UserVO user){
-  //단 전제 각각의 jsp input name값과 VO 객체의 변수가 동일해야함
-
+  단 전제 각각의 jsp input name값과 VO 객체의 변수가 동일해야함
   redirect 목록조회페이지
   
 2 userInsert.jsp 페이지 View 코드작성
 3 Browser JSP 실행 
 
 1) userInsert.jsp의 등록버튼 클릭,UserController insertUser메서드 호출 
-userInsert.jsp
+userInsert.jsp:
 
 		<form method="post" action="insertUser.do">
  			<input type="text" name="userId">...
@@ -618,7 +623,6 @@ userInsert.jsp -> @Controller myspring.user.UserController
 		+ insertUser(@ModelAttribute UserVO userVO): String
 
 2) UserController에서 내부적 insertUser(user) 서비스내 메서드 호출
-
 
 UserController -> <<interface>> UserService
 		+ insertUser(user: UserVO)
@@ -650,6 +654,7 @@ UserController -> userList.jsp
 ***
 ### 23 
 [사용자 정보 수정 Controller]
+
 1 사용자 정보 수정 화면 포워딩 updateUserForm
   (@RequestParam String id)메서드 작성 
   @RequestMapping, @RequestParam 어노테이션 선언 
@@ -660,8 +665,8 @@ UserController -> userList.jsp
 1) userList.jsp '수정' 버튼, updateUserForm 메서드 호출
 
 userList.jsp 
-
-	<td><a href="updateUserForm.do?id=${user.userId}">수정</a></td>
+		
+		<td><a href="updateUserForm.do?id=${user.userId}">수정</a></td>
 
 userList.jsp -> @Controller myspring.user.UserController
 		+ @Autowired
@@ -680,17 +685,16 @@ userList.jsp -> @Controller myspring.user.UserController
 		+ updateUserForm(@RequestParam String id);
 		
 2) 데이터베이스에서 요청(param) id로 service에서 getUser(id)호출 
-
 UserController.java 
 
-	@RequestMapping("/updateUserForm.do")
-	public ModelAndView updateUserForm(@RequestParam String id){
-		UserVO user userService.getUser(id);
-		List<String> genderList = new ArrayList<String>();
-		genderList.add("남");..
-		Map<String, Object> map = new HashMap<String, OBject>();
-		map.put("genderList", genderList);...
-		return new ModelAndView("userUpdate", "map", map);
+		@RequestMapping("/updateUserForm.do")
+		public ModelAndView updateUserForm(@RequestParam String id){
+			UserVO user userService.getUser(id);
+			List<String> genderList = new ArrayList<String>();
+			genderList.add("남");..
+			Map<String, Object> map = new HashMap<String, OBject>();
+			map.put("genderList", genderList);...
+			return new ModelAndView("userUpdate", "map", map);
 
 @Controller -> <<interface>> UserService
 		+ insertUser(user:UserVO)
@@ -703,7 +707,7 @@ UserController.java
 
 userUpdate.jsp
 
-	<td> <select name="city">
+		<td> <select name="city">
 		<c:forEach items=${map.cityList} var='cityName'> 
 			<select name="city> <c:choose>
 			<c:when test='${cityName eq map.user.city}'>
@@ -715,6 +719,7 @@ userUpdate.jsp
 @Controller -> userUpdate.jsp
 
 [사용자 정보 수정 Controller]
+
 1) userUpdate.jsp 수정정보 입력시 updateUser메서드 호출
 <input type="hidden"name="userId" value='${map.user.userId}'/> 
 <td>${map.user.userId}</td> 수정되면 안됨 but 활용해야
@@ -749,10 +754,10 @@ userUpdate.jsp -> @Controller myspring.user.UserController
 3)!업데이트 처리 후 목록 조회 다시, getUserList 메서드 Redirect
 UserController.java
 
-	@RequestMapping("/updateUser.do")
-	public String updateUser(@ModelAttribute UserVO user){
-		userService.updateUser(user);
-		return "redirect:/getUserList.do";
+		@RequestMapping("/updateUser.do")
+		public String updateUser(@ModelAttribute UserVO user){
+			userService.updateUser(user);
+			return "redirect:/getUserList.do";
 
 4) userList.jsp 포워딩
 @Controller -> userList.jsp
@@ -767,11 +772,11 @@ UserController.java
 
 @PathVariable 어노테이션 : 파라미터URL 형식으로 받을 수 있게 해줌
 
-	<a href="deleteUser.do?id=${user.userId}"> & 
-		@RequestMapping(value="/deleteUser.do")
-	<a href="deleteUser.do/${user.userId}"> & 
-		@RequestMapping(value="/deleteUser.do/{id}")
-		public String deleteUser(@PathVariable String id){  
+		<a href="deleteUser.do?id=${user.userId}"> & 
+			@RequestMapping(value="/deleteUser.do")
+		<a href="deleteUser.do/${user.userId}"> & 
+			@RequestMapping(value="/deleteUser.do/{id}")
+			public String deleteUser(@PathVariable String id){  
 RESTful API에서 활용함 
 
 이걸 이해서 DispatcherServlet url-pattern바뀌어야 
@@ -783,23 +788,26 @@ RESTful API에서 활용함
 4) userList.jsp 포워딩
 
 [Exception MVC 예외처리]
+
 @ExceptionHandler : 예외Type,Message보여줄 JSP페이지
 
 <%@ page isErrorPage = "true" %> 선언해야 함
 
-***
+
+* * *
 config/ User.xml 확인!!! 18강
 * * * 
 ### 24
+
 [REST(Representational State Transfer)]
 HTTP URI + HTTP Method 
 HTTP URI 제어 자원 resource 명시, Get,Post,Put,Delete HTTP Method통해 
 해당자원 resource 제어 명령 내리는 방식 아키텍처 
 
-POST : Create(insert)	/users
-GET : Read(select)  	/users, /users/{id}
-PUT : Update/Create	/users
-DELETE : Delete 	/users/{id}
+1) POST : Create(insert)	/users
+2) GET : Read(select)  	/users, /users/{id}
+3) PUT : Update/Create	/users
+4) DELETE : Delete 	/users/{id}
 
 QueryString형식 GET/list.do?no=510&name=java 아닌 /java/510
 Get,Post만이 아닌 GET/POST/DELETE/PUT CRUD처리
@@ -815,6 +823,7 @@ jackson-mapper maven & beans-web.xml : <mvc:annotation-driven,
 
 [Spring MVC 기반 RESTful 웹서비스 구현 절차]
 1 RESTful 웹서비스 처리 RestfulController클래스 작성 및 Spring Bean 등록 
+
 2 요청 처리할 메서드 @RequestMapping, 
 @RequestBody(XML,JSON->JAVA Obj) 
 @ResponseBody(JAVA obj->JSON)어노테이션 선언 
@@ -931,7 +940,7 @@ userList_json.html
 			userUpdate();
 			init();
 		}); jQuery document ready해야 사용 가능!
-//초기화
+	//초기화
 
 	function init(){	
 		$('#btnInit').on('click',function(){
@@ -941,7 +950,7 @@ userList_json.html
 		});
 	} // init함수
 
-//목록조회	
+	//목록조회	
 
 	function userList(){
 		$.ajax({
@@ -953,7 +962,7 @@ userList_json.html
 		});
 	}//server단의 RFUController에서 url:value, type:method:GET, error/success표현 확인
 
-//목록조회응답(위에서 success일 떄)
+	//목록조회응답(위에서 success일 떄)
 
 	function userListResult(xhr){
 		console.log(xhr.data);
@@ -969,7 +978,7 @@ userList_json.html
 		}); //each 
 	//server단 result.put("data",userList);라서 xhr.data 로, 그리고 비동기적 html <tr><td></td></tr> : html <tbody></tbody>에 넣음
 
-//사용자(특정)조회 요청: 그 전에 우선 불러와야 함
+	//사용자(특정)조회 요청: 그 전에 우선 불러와야 함
 
 	function userSelect(){
 		$('body').on('click', '#btnSelect', function(){
@@ -984,7 +993,7 @@ userList_json.html
 		});
 	}//server단의 RFUController에서 url:value, type:method:GET, error/success 
 
-//사용자 조회 응답(위에서 success일 때)
+	//사용자 조회 응답(위에서 success일 때)
 
 	function userSelectResult(xhr){
 		var user= xhr.data;
@@ -994,7 +1003,7 @@ userList_json.html
 		//elem.checked VS $( elem ).prop( "checked" )
 		$('select[name="city"]').val(user.city).attr("selected", "selected");
 
-//사용자 등록 요청
+	//사용자 등록 요청
 
 	function userInsert(){
 		$('#btnInsert').on('click', function(){
@@ -1014,7 +1023,7 @@ userList_json.html
 			});
 		}); //html form btnInsert id인 버튼 클릭
 	}
-//사용자 수정 요청
+	//사용자 수정 요청
 
 	function userUpdate(){
 		$('#btnUpdate').on('click', function(){
@@ -1032,8 +1041,8 @@ userList_json.html
 			error:function(xhr,status,message){ alert(status+message);} 
 		}); //ajax
 	}); //html form btnUpdate id인 버튼 클릭 
-}
-//사용자 삭제 요청 !!!조심 form이 아닌 List상에서 삭제
+	}
+	//사용자 삭제 요청 !!!조심 form이 아닌 List상에서 삭제
 
 	function userDelete(){
 		$('body').on('click','#btnDelete',function(){ 
@@ -1051,7 +1060,7 @@ userList_json.html
 				}
 		}); }//if	
 	}); //userList btnDelete 버튼 클릭
-}
+	}
 
 * * * 
 ### 28
@@ -1065,7 +1074,7 @@ XML-> Java OBject(역직렬화, Unmarsalling)해주는 API
 2 RestfulController클래스 사용자목록 조회 getUserListXml()메서드 작성
   @RequestMapping, @ResponseBody 어노테이션 선언
 3 Postman 메서드 테스트
-4 jQuery기반 Ajax 통신 userList_Xml.html 작성
+4 jQuery기반 Ajax 통신 userList_Xml.html 작성.
 
 	@XmlRootElement(name="users")
 	public class UserVOXML{
@@ -1080,31 +1089,29 @@ XML-> Java OBject(역직렬화, Unmarsalling)해주는 API
 
 이것이 만드는 것은 
 
-	<users>
-		<status>success</status>
-		<user>
-			<city>jeju</city>
-			<gender>m</gender>
-			<name>dooly</name>
-			<userId>dolly</userId>
-		</user>
-		<user>...</user>
-	</users>
+		<users>
+			<status>success</status>
+			<user>
+				<city>jeju</city>
+				<gender>m</gender>
+				<name>dooly</name>
+				<userId>dolly</userId>
+			</user>
+			<user>...</user>
+		</users>
 
 그럼 RestfulUserController도
 
-	@RequestMapping(value="/usersXml", method=RequestMethod.GET)
-		@ResponseBody
-		public UserVOXML getUserListXml(){
-			List<UserVO> list = userService.getUserList();
-			UserVOXML xml = new UserVOXML("success", list);
-			return xml;
+		@RequestMapping(value="/usersXml", method=RequestMethod.GET)
+			@ResponseBody
+			public UserVOXML getUserListXml(){
+				List<UserVO> list = userService.getUserList();
+				UserVOXML xml = new UserVOXML("success", list);
+				return xml;
 
 Postman : GET : /usersXml 
-userList_Xml.html 도 Xml반영 url, contentType,dataType 
-
-//Ajax요청
-
+	
+	//Ajax요청
 	$(function(){
 		$.ajax({
 			type:'get', url:'usersXml',
@@ -1114,8 +1121,7 @@ userList_Xml.html 도 Xml반영 url, contentType,dataType
 		});
 	});
 
-//Ajax응답
-
+	//Ajax응답
 	function showResult(xhr){
 		console.log(xhr);
 		if($(xhr).find("status").text()=='success'){ //status 태그먼저나옴
