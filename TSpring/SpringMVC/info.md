@@ -138,7 +138,7 @@ presentation 계층 : @Controller
 최종UI에서 표현해야 할 도메인 모델 사용 
 최종 UI입력 데이터 대한 유효성검증 Validation 기능 제공
 비즈니스 로직, 최종 UI 분리위한 컨트롤러 기능 제공
-~~~~~UserController 클래스 (UI-서비스 계층 연결)
+//UserController 클래스 (UI-서비스 계층 연결)
 JSP UserController통해 서비스계층 UserService사용, IoC-@Autowired
 
 service 계층 : 인터페이스 + @Service
@@ -147,46 +147,40 @@ service 계층 : 인터페이스 + @Service
 프레젠테이션 계층 - 데이터 액세스 계층 사이 연결, 두 계층이 직접 통신 않아
 애플리케이션 유연성 증가
 다른 계층들과 통신하기 위한 인터페이스를 제공 
-~~~~UserService 인터페이스
-~~~~UserServiceImpl 클래스 (업무로직)
+//UserService 인터페이스
+//UserServiceImpl 클래스 (업무로직)
 UserDAO 사용 IoC-@Autowired
 
 data access 계층  : DAO 인터페이스 + @Repository
 rdbms 데이터 조작 데이터 액세스 로직 구체화
 영구저장소 데이터 CRUD 조회 등록 수정 삭제 
 ORM 프레임워크(MyBatis, Hibernate) 주로사용 
-~~~~~UserDAO 인터페이스
-~~~~~UserDAOImplJDBC 클래스 
+//UserDAO 인터페이스
+//UserDAOImplJDBC 클래스 
 (springJdBC-DataSource 주입)(MyBatis-SQlSession 주입)
 
 3개 계층 공통 : 도메인 모델 '클래스' 계층x
 RDBMS의 entity와 유사한 VO(Value Object) 또는 DTO(Data Transfer Object)
 private선언 멤버변수 : getter setter 메서드 클래스 지칭
-!!!!!!!!!!1
+
 항상  public, private변수, 생성자 2개, public gettersetter
 public class AAA {
     private String id;
     private String name;
-
     public AAA(){}
-
     public AAA(String id, String name){
         this.id = id;
         this.name = name;
     }
-
     public void setId(String id){
         this.id = id;
     }
-
     public String getId(){
         return id;
     }
-
     public void setName(String name){
         this.name = name;
     }
-    
     public String getName(){
         return name;
     }
@@ -355,7 +349,6 @@ SpringMVC구성요소
     -- View : Controller 처리결과 화면 대한 정보보유 객체
     -- ViewResolver: Controller가 리턴한 뷰 이름 기반 Controller처리결과 생성
 6) View는 클라이언트에게 전송할 응답 생성 
-
 
 [Spring MVC 기반 웹 어플리케이션 작성 절차]
 1) 클라이언트의 요청을 받는 DispatcherServlet을 web.xml설정 
@@ -780,3 +773,336 @@ RESTful API에서 활용함
 
 ***
 config/ User.xml 확인!!! 18강
+
+
+
+* * * 
+###24
+
+REST(Representational State Transfer)
+HTTP URI + HTTP Method 
+HTTP URI 제어 자원 resource 명시, Get,Post,Put,Delete HTTP Method통해 
+해당자원 resource 제어 명령 내리는 방식 아키텍처 
+
+POST : Create(insert)	/users
+GET : Read(select)  	/users, /users/{id}
+PUT : Update/Create	/users
+DELETE : Delete 	/users/{id}
+
+QueryString형식 GET/list.do?no=510&name=java 아닌 /java/510
+Get,Post만이 아닌 GET/POST/DELETE/PUT CRUD처리
+
+json : 경량의 data-교환 형식
+JavaScriptObject Notation : { " " : " ",
+                              " " : [" ", " "] } //array,list
+JSON library : Jackson 
+Browser(JSON) - Backend(JAVA Objects) 
+XML : eXtensible Markup Language : Data 저장,전달 tag 자유정의 
+jackson-mapper maven & beans-web.xml : <mvc:annotation-driven,
+<mvc:default-servlet-handler> : tomcat>server.xml>url-pattern"/"과 충돌문제
+
+[Spring MVC 기반 RESTful 웹서비스 구현 절차]
+1 RESTful 웹서비스 처리 RestfulController클래스 작성 및 Spring Bean 등록 
+2 요청 처리할 메서드 @RequestMapping, 
+@RequestBody(XML,JSON->JAVA Obj) 
+@ResponseBody(JAVA obj->JSON)어노테이션 선언 
+
+without @ResponseBody(REST 전 강의)
+즉 getByIdInHTML메서드 : ViewResolver의 /user.jsp 포워딩, UserModel객체참조
+
+	@Controller
+	@RequestMapping("/user")
+	public class UserController{
+		@RequestMapping(value="/html/{id}", method=RequestMethod.GET)
+		public String getByIdInHTML(@PathVariable String id, ModelMap model){
+			UserModel user = new UserModel();
+			user.setId(id);
+			user.setName("al");
+			model.addAttribute("user", user);
+			return "user";
+ 		}
+	}
+		
+
+with @ResponseBody
+즉 getByIdInJSON메서드 : MappingJacksonHttpMessageConverter,
+리턴값 UserModel JAVA객체 -> JSON 변환
+
+	@Controller
+	@RequestMapping("/user")
+	public class UserController{
+		@RequestMapping(value="/json/{id}", method=RequestMethod.GET)
+		@ResponseBody
+		public UserModel getByIdInJSON(@PathVariable String id){
+			UserModel user = new UserModel();
+			user.setId(id);
+			user.setName("al");
+			return user;
+		}
+
+3 Postman(REST Client Tool) 메서드 각각 테스트 
+4 Ajax 통신으로 RESTful 웹서비스 호출 HTML페이지 작성
+
+insert는 select와 달리 json값이 들어옴 : Headers, insertUser 파라미터 @Body
+	@RequestMapping(value="/users", 
+			method=RequestMethod.POST (GET아님), 
+                	headers={"Content-type=application/json"})
+	@ResponseBody 
+	public Map insertUser(@RequestBody UserVO user){
+		그리고 if(user!= null) 해줘야 함
+이것은 Postman에서도 Headers(Content-Type, application/json;charset=UTF-8)입력!! 
+     Post// Body/raw JSON(application/json)  
+
+수정(method="PUT") 그 외 Headers(Content-type, application/json;charset=UTF-9)
+     Put//  Body/raw JSON(application/json) 
+
+PUT,POST 둘다 result:TRUE만 나오고, 다시 userList GET할 때 업데이트현황 확인가능
+
+삭제(method="DELETE", value="/users/{id}")
+DELETE, users/{id} Postman
+
+* * * 
+###26
+Ajax (Asynchronous Javascript and XML)
+웹 2.0 실현 핵심기능 (HTML, CSS, JS, XML, XMLHttpRequest객체)
+비동기적 : 서버 데이터가 로드되는 동안 계속 사용 가능 Ajax 이벤트 일부만 수정
+- 예 1 : 라이브 검색(자동완성, 검색어 입력동시에 검색결과 호출)
+- 예 2 : 사용자 정보 표시 (회원가입 시 입력 동시에 중복 메시지, 온라인 쇼핑몰 물품 추가시 전체 페이지 새로고침X)
+
+XMLHttpRequest객체 : XHR 
+
+1) XMLHttpRequest객체 생성: Request 보낼 준비
+chrome,firefox,ie10 
+var xhr = new XMLHttpRequest();
+
+2) Callback함수 생성: 서버 Response 오면 실행
+xhr.onreadystatechange = function(){
+	if(xhr.readyState==4){
+		var myDiv= document.getElementById('myDiv');
+		myDiv.innerHTML=xhr.responseText;
+		}
+}
+
+3) Request Open : HTTP method, 호출 Server url 정보 전달
+xhr.open("GET", "user.do");
+
+4) Request Send
+xhr.send();
+
+이것을 jQuery로 하면 크로스브라우징, 간단한 코드 사용 가능, 강력한 CSS셀렉터, PlugIn,
+HTML element동적 manipulation, attribute 읽고쓰기, 선택(Selector)
+(CDN : content delivery network host or 로컬 저장)
+ jQuery 꼭 document ready해야 사용 가능
+<script> $(document).ready(function(){});</script>
+**********
+26강 jQuery 예시 다시 
+https://offbyone.tistory.com/368
+*********
+
+###27
+
+[클라이언트 프로그램]
+1)RESTful 웹서비스 호출 : Ajax 통신
+2)Ajax 복잡코드 간결 작성 위해 jQuery의 $.ajax()함수 사용
+3)서버로부터 받은 데이터 이용, 동적 테이블 Row 증가 
+4)사용자 등록, 수정시 입력한 데이터 JSON포맷 변경, 서버 전송
+5)화면 스타일 코드 Bootstrap 
+
+//url:" ", type:' '
+
+userList_json.html
+<script type="text/javascript">
+	$(function(){
+		userList();
+		userSelect();
+		userDelete();
+		userInsert();
+		userUpdate();
+		init();
+  	}); jQuery document ready해야 사용 가능!
+//초기화
+	function init(){	
+		$('#btnInit').on('click',function(){
+			$('#form1').each(function(){
+				this.reset();
+			});
+		});
+	} // init함수
+
+//목록조회	
+	function userList(){
+		$.ajax({
+			url:'users',type:'GET',
+			contentType:'application/json;charset=utf-8', dataType:'json', 
+			error:function(xhr,status,msg){
+				alert(status+msg);},
+			success:userListResult
+		});
+	}//server단의 RFUController에서 url:value, type:method:GET, error/success표현 확인
+
+//목록조회응답(위에서 success일 떄)
+	function userListResult(xhr){
+		console.log(xhr.data);
+		$("body").empty();
+		$.each(xhr.data, function(idx, item){
+			$('<tr>')
+				.append($('<td>').html(item.userId)			
+				.append($('<td>').html(item.gender)..
+				.append($('<td>').html('<button id=￦'btnSelect￦')조회(</button>'))
+				.append($('<td>').html('<button id=￦'btnDelete￦')삭제(</button>'))
+				.append($('<input type=￦'hidden￦' id=￦'hidden_userId￦'>').val(item.userId))
+				.appendTo('tbody');
+		}); //each 
+	//server단 result.put("data",userList);라서 xhr.data 로, 그리고 비동기적 html <tr><td></td></tr> : html <tbody></tbody>에 넣음
+
+//사용자(특정)조회 요청: 그 전에 우선 불러와야 함
+	function userSelect(){
+		$('body').on('click', '#btnSelect', function(){
+			var userId= $(this).closest('tr').find('#hidden_userId').val(); //위에 id hidden_userId, val(item.userId)
+
+		$.ajax({
+			url:'users/'+userId, type:'GET', //특정사용자조회 users/{id}였으니까
+			contentType:'application/json;charset='utf-8', dataType='json',
+			error:function(xhr,status,msg){
+				alert(status+msg);},
+			success:userSelectResult
+		});
+	}//server단의 RFUController에서 url:value, type:method:GET, error/success 
+
+//사용자 조회 응답(위에서 success일 때)
+	function userSelectResult(xhr){
+		var user= xhr.data;
+		$('input:text[name="userId"]').val(user.userId);
+		$('input:text[name="name"]').val(user.name);
+		$('input:radio[name="gender"][value=""+user.gender+""]').prop('checked',true);
+		//elem.checked VS $( elem ).prop( "checked" )
+		$('select[name="city"]').val(user.city).attr("selected", "selected");
+
+//사용자 등록 요청
+	function userInsert(){
+		$('#btnInsert').on('click', function(){
+		var userId = $('input:text[name="userId"]).val();
+		var name = $('input:text[name="name"]).val();
+		var gender = $('input:radio[name="gender"]:checked').val(); //radio
+		var city = $('select[name="city"]).val();
+		$.ajax({ 
+			url:"users", type:'POST', dataType:'json',
+			data:JSON.stringify({userId:userId, name:name, gender:gender, city:city}), //UserVO 객체 to json
+			contentType:'application/json',
+			mimeType:'application/json', // Multipurpose Internet Mail Extensions,여러 확장자 
+			success:function(response){
+				if(response.result==true){
+					userList();}}, // server controller에서 result.put("result", Boolean.TRUE); 
+			error:function(xhr,status,message){alert(status+msg);}
+			});
+		}); //html form btnInsert id인 버튼 클릭
+	}
+
+//사용자 수정 요청
+	function userUpdate(){
+		$('#btnUpdate').on('click', function(){
+		var userId = $('input:text[name="userId"]').val();
+		var name = $('input:text[name="name"]').val();
+		var gender = $('input:radio[name="gender"]:checked').val();
+		var city = $('select[name="city"]').val();
+		$.ajax({
+			url:"users", type:'PUT', dataType:'json',
+			data:JSON.stringify({userId:userId, name:name, gender:gender, city:city});//UserVO->json
+			contentType:'application/json',
+			mimeType:'application/json',
+			success:function(data?result?){
+				userList();},
+			error:function(xhr,status,message){ alert(status+message);} 
+		}); //ajax
+	}); //html form btnUpdate id인 버튼 클릭 
+}
+
+//사용자 삭제 요청 **조심 form이 아닌 List상에서 삭제
+	function userDelete(){
+		$('body').on('click','#btnDelete',function(){ 
+		var userId = $(this).closest('tr').find('#hidden_userId').val(); //마지막 리턴값 id <tr>의 <btnDelete> 
+		var result = confirm(userId + '사용자 정말 삭제하시겠습니까?');
+		if (result){		result=true, 즉 confirm값 OK이면 삭제 실행
+			$.ajax({
+				url:"users/"+userId, type:'DELETE', //  server Controller 상 users/{id}
+				contentType:'application/jsonlcharset=utf-8', dataType:'json',
+				error:function(xhr,status,msg){
+					console.log(status+msg);},
+				success:function(xhr){
+					console.log(xhr.result);
+					userList();
+				}
+		}); }//if	
+	}); //userList btnDelete 버튼 클릭
+}
+
+* * * 
+###28
+
+JAXB(Java Architecture for XML Binding) 
+jackson과 달리 Java SE에 포함된, Java Object->XML(직렬화, Marshalling) 및 
+XML-> Java OBject(역직렬화, Unmarsalling)해주는 API
+@XmlRootElement : 클래스 XML Root, @XmlElement : 변수 :XML element
+
+[JAXB 사용 RESTful웹서비스 구현절차] 
+1 Java 객체 XML 변환 @XMLRootElement와 @XMLElement 어노테이션 선언 UserVOXML클래스선언
+2 RestfulController클래스 사용자목록 조회 getUserListXml()메서드 작성
+  @RequestMapping, @ResponseBody 어노테이션 선언
+3 Postman 메서드 테스트
+4 jQuery기반 Ajax 통신 userList_Xml.html 작성
+
+	@XmlRootElement(name="users")
+	public class UserVOXML{
+		private String status;
+		private List<UserVO> userList;
+
+	@XmlElement
+	public void setStatus(String status) {this.status = status;}
+
+	@XmlElement
+	public void setUserList(List<UserVO> userList) {this.userList= userList;} 
+
+이것이 만드는 것은 
+<users>
+	<status>success</status>
+	<user>
+		<city>jeju</city>
+		<gender>m</gender>
+		<name>dooly</name>
+		<userId>dolly</userId>
+	</user>
+	<user>...</user>
+</users>
+
+그럼 RestfulUserController도
+		@RequestMapping(value="/usersXml", method=RequestMethod.GET)
+		@ResponseBody
+		public UserVOXML getUserListXml(){
+			List<UserVO> list = userService.getUserList();
+			UserVOXML xml = new UserVOXML("success", list);
+			return xml;
+
+Postman : GET : /usersXml 
+userList_Xml.html 도 Xml반영 url, contentType,dataType 
+
+//Ajax요청
+$(function(){
+	$.ajax({
+		type:'get', url:'usersXml',
+		contentType:'application/xml;charset=utf-8', dataType:'xml',
+		error:function(xhr,status,msg){alert(status+msg);},
+		success:showResult
+	});
+});
+
+//Ajax응답
+	function showResult(xhr){
+		console.log(xhr);
+		if($(xhr).find("status").text()=='success'){ //status 태그먼저나옴
+			$(xhr).find("user").each(function(idx, user){
+				$('<tr>')
+				.append($('<td>').html($(user).find("userId").text()))
+				.append($('<td>').html($(user).find("name").text()))...
+				.appendTo('tbody');
+			}); //user태그 each loop	 }} //showResult
+
