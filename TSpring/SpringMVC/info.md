@@ -37,11 +37,12 @@ TDD Kent Beck + 디자인패턴 Erich Gamma
 pom.xml dependdency junit추가 
 Run as 도 as Junit Test
 assert메서드로 예상,실제값 
-@Test @Before @After 등 어노테이션 지원
-@Test 각@Test메서드 호출시 새 인스턴스 독립적 실행 
-@Before : @Test 실행전, 즉 공통사용 코드
-@After : @Test후 실행 릴리즈 
-@BeforeClass, @AfterClass 1회만 수행 
+
+	@Test @Before @After 등 어노테이션 지원
+	@Test 각@Test메서드 호출시 새 인스턴스 독립적 실행 
+	@Before : @Test 실행전, 즉 공통사용 코드
+	@After : @Test후 실행 릴리즈 
+	@BeforeClass, @AfterClass 1회만 수행 
 
 Assert메서드
 assertEquals(a,b) 객체value, assertSame(a,b)객체ref
@@ -99,21 +100,22 @@ XML이 아닌 간단한 key=value 구성의 properties파일형식으로 저장
 ### 9
  XML 단독 : 운영 -모든 bean 명시적 등록, 충돌 위험, setter/constructor필요
  XML, Bean scanning :개발 적합 - 특정 어노테이션 부여,당장은 xml 관리 수고덜어주나 의존관계 엉킬수 있음
- @Component <bean>태그와 동일함 아래 세 개는 Compoennt의 특정 케이스 용
- @Repository: persistence layer like 파일 데이터베이스
- @Service : 서비스 비즈니스 로직
- @Controller : presentation layer, webapp response, Request 
+ 
+	 @Component <bean>태그와 동일함 아래 세 개는 Compoennt의 특정 케이스 용
+	 @Repository: persistence layer like 파일 데이터베이스
+	 @Service : 서비스 비즈니스 로직
+	 @Controller : presentation layer, webapp response, Request 
 
- @Autowired : Type으로 주입, property, setter , 생성자, 일반메서드 적용 가능 
- @Resource : Name으로 주입, (제한적) property, setter메서드에만 적용가능. 필요자원 자동연결 
+	 @Autowired : Type으로 주입, property, setter , 생성자, 일반메서드 적용 가능 
+	 @Resource : Name으로 주입, (제한적) property, setter메서드에만 적용가능. 필요자원 자동연결 
 
- @Value("hh") 는 <property .. value="hh"/>와 동일 단순 
- @Qualifier : @Autowired와 함께 사용 (동일 타입의 Bean 객체 중 하나 ) 
- setter메서드 불필요 by @Value() or @Qualifier()
+	 @Value("hh") 는 <property .. value="hh"/>와 동일 단순 
+	 @Qualifier : @Autowired와 함께 사용 (동일 타입의 Bean 객체 중 하나 ) 
+	 setter메서드 불필요 by @Value() or @Qualifier()
 
-<context:component-scan base-package="myspring.di.annot"> 자동 bean 등록,
- @Autowired 의존관계 주입받는 어노테이션 선언시 xml설정 필요 해당 클래스가 있는 package
- <context:include-filter> <content:exclude-filter>
+	<context:component-scan base-package="myspring.di.annot"> 자동 bean 등록,
+	 @Autowired 의존관계 주입받는 어노테이션 선언시 xml설정 필요 해당 클래스가 있는 package
+	 <context:include-filter> <content:exclude-filter>
 
  원칙적인 POJO 에서 class인 /Hello/, /StringPrinter/, /ConsolePrinter/에 @Component("name")
  또한 StringPrinter에 의존하니 /Hello/에 @Autowired도 추가
@@ -262,31 +264,32 @@ execution([접근제한자 패턴] 리턴값타입패턴 [타입패턴.]
 메서드이름패턴(타입패턴|"..",...)[throws 예외패턴])
 
 예시 : execution(* aspects.trace.demo.*.*(..))"
-execution(*hello(..)) hello 이름 메서드 선정, 모든 파라미터exec
-execution(*myspring.user.srvice.UserServiceImpl.*(..)) 
-  -- UserServiceImpl 클래스 직접 지정, 모든 메서드 선택 
-execution(*myspring.user.service*.*(..)) service패키지 내 모든 클래스
-execution(*myspring.user.service..*.*(..)) service뒤에 .. 더 있어, 서브패키지 모든 클래스까지
-execution(* *..Target.*(..)) Target이름 모든 클래스(패키지 무관)
+
+	execution(*hello(..)) hello 이름 메서드 선정, 모든 파라미터exec
+	execution(*myspring.user.srvice.UserServiceImpl.*(..)) 
+	  -- UserServiceImpl 클래스 직접 지정, 모든 메서드 선택 
+	execution(*myspring.user.service*.*(..)) service패키지 내 모든 클래스
+	execution(*myspring.user.service..*.*(..)) service뒤에 .. 더 있어, 서브패키지 모든 클래스까지
+	execution(* *..Target.*(..)) Target이름 모든 클래스(패키지 무관)
 
 XML POJO : AOP 구현 Advice 클래스 작성 <aop:config> 어드바이스,포인트컷
-@Aspect 어노테이션 <aop:aspectj-autoproxy/> 메서드,포인트컷 : 클래스 내부
+	@Aspect 어노테이션 <aop:aspectj-autoproxy/> 메서드,포인트컷 : 클래스 내부
 
-@Before("pointcut)(joinPoint 파라미터 참조가능), @After("pointcut) : 정상종료, 예외(리턴값 직접 전달x) 
-@Around("pointcut") 
-@AfterReturning(pointcut="", returning="") returning 리턴값 변수이름 
-@AfterThrowing(pointcut="", throwing="") throwing 예외 저장 변수이름
+	@Before("pointcut)(joinPoint 파라미터 참조가능), @After("pointcut) : 정상종료, 예외(리턴값 직접 전달x) 
+	@Around("pointcut") 
+	@AfterReturning(pointcut="", returning="") returning 리턴값 변수이름 
+	@AfterThrowing(pointcut="", throwing="") throwing 예외 저장 변수이름
 
-UserService.getUser(..)시작
-@Before[getUser]전처리
-@Before[getUser]아규먼트
-@Before[read] 전처리
-@Before[read] 아규먼트
-LoadingXML bean def
-@After[getUser]메서드 실행완료
-@AfterThrowing[getUser]메서드 예외발생
-@AfterThrowing[getUser] PreparedStatement Callback
-UserService.getUser(..)종료
+	UserService.getUser(..)시작
+	@Before[getUser]전처리
+	@Before[getUser]아규먼트
+	@Before[read] 전처리
+	@Before[read] 아규먼트
+	LoadingXML bean def
+	@After[getUser]메서드 실행완료
+	@AfterThrowing[getUser]메서드 예외발생
+	@AfterThrowing[getUser] PreparedStatement Callback
+	UserService.getUser(..)종료
 
 ***
  mybatis 건너뜀
@@ -299,13 +302,13 @@ C ->M 호출, 비즈니스 로직,데이터 처리 : 결과 받음
 C ->V 화면 생성 요청: 결과화면 
 C -> client 응답 
 
-Model 컴포넌트 : 데이터저장소와 연동, 입출력 데이터 다룸 : CRUD 트랜잭션 
+1. Model 컴포넌트 : 데이터저장소와 연동, 입출력 데이터 다룸 : CRUD 트랜잭션 
 DAO, Service 클래스 해당 
 
-View 컴포넌트 : 모델 처리 데이터 또는 작업결과, 출력화면 만듦
+2. View 컴포넌트 : 모델 처리 데이터 또는 작업결과, 출력화면 만듦
 출력은 Browser, HTML, CSS, JS 사용 출력UI만듦 : HTML&JSP 가능
 
-Controller 컴포넌트 : 클라이언트 요청 업무수행 Model 컴포넌트 호출 
+3. Controller 컴포넌트 : 클라이언트 요청 업무수행 Model 컴포넌트 호출 
 적절히 데이터 가공, 또한 모델의 수행결과 화면생성 뷰 전달 
 Servlet, JSP로 가능 
 
@@ -365,8 +368,10 @@ SpringMVC구성요소
 기타 환경설정 메모장
 ***
 ### 21
-EL : <%= request.getParameter("name")%> -> ${param.name}
-    <% UserVO user=(UserVO)request.getAttribute("user");
+EL : 
+
+	<%= request.getParameter("name")%> -> ${param.name}
+	<% UserVO user=(UserVO)request.getAttribute("user");
        out.println(user.getName()); %>
     --> ${user.name} request는 생략 가능 , session은 명시 필요 
     name만 EL로 하면, value는 자동 넘겨짐
@@ -384,7 +389,7 @@ request,response,pageContext, application 같은 JSP내장객체 쉽게 접근 �
 3)function
 4)database 5)xml   
 
-DispatcherServlet '*.do￦' 로 설정해놓은 상태
+DispatcherServlet '*.do'* 로 설정해놓은 상태
 HelloController 
 1 POJO형태 Controller클래스 작성
 2 @Controller어노테이션 선언 
@@ -419,8 +424,10 @@ Browser상에 /hello.do 하면
 
 2)@Autowired에 따라 userService 컨트롤러가 서비스 찾으면, getUserList() 메서드 호출
 UserController.java : 
+
 		      @Autowired UserService userService , 
                       @RequestMapping("/getUserList.do") String getUserList(Model model)
+		      
 beans.xml       <context:component-scan base-package="myspring.user..../>
 
 UserController -> <<interface>> UserService
@@ -429,15 +436,15 @@ UserController -> <<interface>> UserService
 		+ deleteUser(id:String)
 		+ getUser(id:String) :UserVO
 
-
 3)호출결과 데이터 UserController에 다시쏘면,Model 객체에 저장
 UserController -> org.springframework.ui.Model
     		+ addAttribute(String, Object)
 
-
 4)JSP파일에 포워딩 
-userList.jsp   <c:forEach var="user" items="${userList}">
-                    <tr><td>${user.userId}</td></tr>
+userList.jsp   
+
+		<c:forEach var="user" items="${userList}">
+                  <tr><td>${user.userId}</td></tr>
 UserController -> userList.jsp
 
 5)JSP파일은 Model에 저장된 객체, 즉 데이터 읽음
@@ -456,6 +463,7 @@ ViewResolver 설정 : internalResourceViewResolver
 
 AAA.do?XXX=${} 와 (@RequestMapping("/AAA.do") @RequestParam <T> XXX)의 XXX 가 동일해야 함 
 userList.jsp   
+	
 		<c:forEach var="user" items=${userList}>
             	<tr><td><a href="getUser.do?id=${user.userId}>
  			${user.userId} </a>
@@ -574,8 +582,7 @@ userInsert.jsp -> org.springframework.web.servlet.ModelAndView
 [사용자 정보 등록 Controller]
 1 사용자 정보 등록 insertUser(@ModelAttribute UserVO userVO)메서드 작성
   @RequestMapping, @ModelAttribute 선언  
-
----@ModelAttribute 는 HTTP요청 포함 파라미터, 모델 객체로 바인딩 저장하게 함
+  @ModelAttribute 는 HTTP요청 포함 파라미터, 모델 객체로 바인딩 저장하게 함
    userInsert.jsp의 <input type="text" name="userId"/>,...
               <select name="city"><c:forEach var="cityName option value=${cityName}>
    UserVO.java 의 public class UserVO{ private String userId;(...) private String city;
@@ -586,6 +593,7 @@ userInsert.jsp -> org.springframework.web.servlet.ModelAndView
   //단 전제 각각의 jsp input name값과 VO 객체의 변수가 동일해야함
 
   redirect 목록조회페이지
+  
 2 userInsert.jsp 페이지 View 코드작성
 3 Browser JSP 실행 
 
@@ -652,8 +660,8 @@ UserController -> userList.jsp
 1) userList.jsp '수정' 버튼, updateUserForm 메서드 호출
 
 userList.jsp 
-<td><a href="updateUserForm.do?id=${user.userId}">수정</a></td>
 
+	<td><a href="updateUserForm.do?id=${user.userId}">수정</a></td>
 
 userList.jsp -> @Controller myspring.user.UserController
 		+ @Autowired
@@ -671,7 +679,6 @@ userList.jsp -> @Controller myspring.user.UserController
 		+ @RequestMapping(name="updateUserForm.do")
 		+ updateUserForm(@RequestParam String id);
 		
-
 2) 데이터베이스에서 요청(param) id로 service에서 getUser(id)호출 
 
 UserController.java 
@@ -900,10 +907,10 @@ xhr.send();
 HTML element동적 manipulation, attribute 읽고쓰기, 선택(Selector)
 (CDN : content delivery network host or 로컬 저장)
  jQuery 꼭 document ready해야 사용 가능
-<script> $(document).ready(function(){});</script>
+
+	<script> $(document).ready(function(){});</script>
 * * *
 26강 jQuery 예시 다시 
-https://offbyone.tistory.com/368
 * * *
 ### 27
 [클라이언트 프로그램]
