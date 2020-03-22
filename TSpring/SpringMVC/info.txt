@@ -6,7 +6,7 @@ PORT : 여러 프로그램 접속방법 (port, route경로는 종종 생략)
 Container 동적 + HTML 정적
 */
 
-/* 6
+###6
 DI : 각 클래스 간의 의존관계를 bean 설정 정보 바탕으로
 컨테이너 자동연결 : 객체 레퍼런스를 컨테이너로부터 주입받아 실행 동시에 동적 의존관계 생성 
 
@@ -30,7 +30,8 @@ getBeans하는 방법은 getBeans(" ") 아이디만, 또는 getBeans(" " , XX.cl
 앞의 경우는 아이디만 객체이므로 (클래스명) 으로 형변환 typecast필요
 그런데 두 경우 생성된 것이 동일함 즉 Singleton, Not 또다른 생성 possible by Spring IOC
 
-/* 7 
+* * *
+###7
 jUnit : 
 TDD Kent Beck + 디자인패턴 Erich Gamma
 
@@ -54,8 +55,7 @@ Spring-test
  @RunWith(SpringJUnit4ClassRunner.class) 
  @ContextConfiguration(locations="classpath:config/beans.xml") //@before mapping here,
  public class HelloBeanJunitSpringTest {
-
-*/
+* * *
 
 /* 8강 
 setter injection <property> 태그 :
