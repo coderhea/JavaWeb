@@ -55,9 +55,10 @@ Spring-test
  @RunWith(SpringJUnit4ClassRunner.class) 
  @ContextConfiguration(locations="classpath:config/beans.xml") //@before mapping here,
  public class HelloBeanJunitSpringTest {
+
 * * *
 
-/* 8강 
+###8
 setter injection <property> 태그 :
 setter 메서드 통해 의존관계 Bean 주입시 
 ref : Bean 이름 이용 (참조객체) 주입, value : 단순 값 또는 Bean 아닌 객체 
@@ -95,7 +96,8 @@ database.properties 안에 driverClass, url, username, pw
  < property name="url" value=${db.url}/>
  <property name="username" value=${db.username}/> 이렇게 프로퍼티 치환  
 
- /*9강
+* * *
+###9
  XML 단독 : 운영 -모든 bean 명시적 등록, 충돌 위험, setter/constructor필요
  XML, Bean scanning :개발 적합 - 특정 어노테이션 부여,당장은 xml 관리 수고덜어주나 의존관계 엉킬수 있음
  @Component <bean>태그와 동일함 아래 세 개는 Compoennt의 특정 케이스 용
@@ -127,8 +129,9 @@ database.properties 안에 driverClass, url, username, pw
       public void test()
   )
 
-*/
-/*10강 : 사용자관리 프로젝트
+* * *
+###10 
+: 사용자관리 프로젝트
 presentation 계층 : @Controller 
 브라우저 상의 웹클라이언트 요청 응답 처리
 상위계층(서비스, 데이터액세스계층) 발생 Exception 처리
@@ -188,9 +191,9 @@ public class AAA {
         return name;
     }
 }
- * /
 
- /* 11강
+***
+###11
  DAO (Data Access Object) 패턴 
  비즈니스 로직, 데이터 액세스 로직 분리 원칙 
  Connection Pooling : 미리 정해진 개수만큼 DB 커넥션 Pool준비 
@@ -231,9 +234,8 @@ pubilc User findUser(String id){
 
 query() List<T> return값 
 
-*/
-
-/* 13ㄱㅏㅇ
+***
+###13
 OOP여도 해결 안되는 핵심/부가기능 분리 : AOP로 
 Asepct 부가기능 애스펙트 정의
 Advice 정의코드 + PointCut적용장소 = Asepct
@@ -259,7 +261,8 @@ XML <aop:config>  또는 @Aspect, <aop:aspectj-autoproxy/>
 around 어드바이스 : 전후, After Throwing 어드바이스 : 예외처리 후
 trace(ProceedingJoinPoint joinPoint) 파라미터 필수선언 
 
-/* 14강
+***
+###14
 AspectJ 포인트컷 표현식 : execution() : 
 execution([접근제한자 패턴] 리턴값타입패턴 [타입패턴.] 
 메서드이름패턴(타입패턴|"..",...)[throws 예외패턴])
@@ -272,8 +275,6 @@ execution(*myspring.user.service*.*(..)) service패키지 내 모든 클래스
 execution(*myspring.user.service..*.*(..)) service뒤에 .. 더 있어, 서브패키지 모든 클래스까지
 execution(* *..Target.*(..)) Target이름 모든 클래스(패키지 무관)
 
-*/
-/*14강
 XML POJO : AOP 구현 Advice 클래스 작성 <aop:config> 어드바이스,포인트컷
 @Aspect 어노테이션 <aop:aspectj-autoproxy/> 메서드,포인트컷 : 클래스 내부
 
@@ -292,9 +293,12 @@ LoadingXML bean def
 @AfterThrowing[getUser]메서드 예외발생
 @AfterThrowing[getUser] PreparedStatement Callback
 UserService.getUser(..)종료
- */
+
+***
  mybatis 건너뜀
- /* 19강 
+***
+
+###19 
 MVC : Business, Presentation logic 분리 위해 : 영향없이 고침
 model - 데이터, 비즈니스 로직 view-프레젠테이션 로직, controller- m,v 사이 상호작용고나리
 client->C 요청
@@ -365,8 +369,10 @@ SpringMVC구성요소
 5) Browser상에서 JSP를 실행
    -- 해당 url에서 실행하면 화면 나옴 
 
-*/ 환경설정은 메모장에서
-/* 21강
+***
+기타 환경설정 메모장
+***
+###21
 EL : <%= request.getParameter("name")%> -> ${param.name}
     <% UserVO user=(UserVO)request.getAttribute("user");
        out.println(user.getName()); %>
@@ -445,8 +451,8 @@ UserController -> userList.jsp
 userList.jsp -> org.springframework.ui.Model
    ${userList} ${user.userid} ${user.username} loop
 
-
-/* 22강
+***
+###22
 ViewResolver 설정 : internalResourceViewResolver
   Controller 실행결과 어떤 view에서 보여줄 것인지 결정하는 기능 제공, prefix(/:라우팅처럼) suffix(확장자)
 웹 관련 설정이므로 beans-web.xml
@@ -515,8 +521,6 @@ UserController -> userInfo.jsp
 
 5)JSP파일은 ModelAndView 정보 읽음
 userInfo.jsp -> org.springframework.web.servlet.ModelAndView
-
-
 
 [사용자 정보 등록 화면 Controller]
 1 insertUserForm() 메서드 작성, @RequestMapping 선언
@@ -634,7 +638,8 @@ web.xml  <filter-class>org.springframework.web.filter.CharacterEncodingFilter
 
 UserController -> userList.jsp  
 
-/*  23강 
+***
+###23 
 [사용자 정보 수정 Controller]
 1 사용자 정보 수정 화면 포워딩 updateUserForm
   (@RequestParam String id)메서드 작성 
@@ -773,4 +778,5 @@ RESTful API에서 활용함
 
 <%@ page isErrorPage = "true" %> 선언해야 함
 
-**config/ User.xml 확인!!! //18강
+***
+config/ User.xml 확인!!! 18강
